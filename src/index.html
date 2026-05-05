@@ -782,6 +782,32 @@
         let currentUser = null;
         const TAX_RATE = 0.10; 
 
+        function sanitizeInput(str) {
+            if (!str) return str;
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        function unescapeHTML(str) {
+            if (!str) return str;
+            return str.replace(/&amp;|&lt;|&gt;|&#39;|&quot;/g,
+                tag => ({
+                    '&amp;': '&',
+                    '&lt;': '<',
+                    '&gt;': '>',
+                    '&#39;': "'",
+                    '&quot;': '"'
+                }[tag])
+            );
+        }
+
         const teamMembers = [
             { id: 1, name: 'Ana Costa', nickname: 'Aninha', role: 'Gerente', password: '123', avatar: 'https://ui-avatars.com/api/?name=Ana+Costa&background=10B981&color=fff', status: 'online', checkIn: '08:00', points: 450, goal: 500 },
             { id: 2, name: 'João Silva', nickname: 'Boss', role: 'Proprietário', password: 'admin', avatar: 'https://ui-avatars.com/api/?name=Joao+Silva&background=4F46E5&color=fff', status: 'online', checkIn: '09:15', points: 320, goal: 400 },
@@ -947,14 +973,14 @@
         function addTeamMember() {
             if(currentUser.role !== 'proprietario') return;
             
-            const name = prompt("Nome do novo membro:");
+            const name = sanitizeInput(prompt("Nome do novo membro:"));
             if(!name) return;
             
-            const role = prompt("Cargo (Ex: Vendedor, Caixa, Gerente):", "Vendedor");
+            const role = sanitizeInput(prompt("Cargo (Ex: Vendedor, Caixa, Gerente):", "Vendedor"));
             if(!role) return;
 
             const pass = prompt("Defina uma senha inicial:", "123");
-            const nick = prompt("Apelido (visível apenas para você):", "");
+            const nick = sanitizeInput(prompt("Apelido (visível apenas para você):", ""));
 
             const newId = teamMembers.length > 0 ? Math.max(...teamMembers.map(m => m.id)) + 1 : 1;
             
@@ -981,8 +1007,8 @@
             const member = teamMembers.find(m => m.id === id);
             if(!member) return;
 
-            const newPass = prompt(`Alterar senha para ${member.name}:`, member.password);
-            const newNick = prompt(`Alterar apelido secreto para ${member.name}:`, member.nickname || "");
+            const newPass = prompt(`Alterar senha para ${unescapeHTML(member.name)}:`, member.password);
+            const newNick = sanitizeInput(prompt(`Alterar apelido secreto para ${unescapeHTML(member.name)}:`, unescapeHTML(member.nickname) || ""));
 
             if(newPass !== null) member.password = newPass;
             if(newNick !== null) member.nickname = newNick;
@@ -1518,11 +1544,11 @@
 
         function editCredor(idx) {
             const c = mockClients[idx];
-            const name = prompt('Nome/Razão Social:', c.name);
+            const name = sanitizeInput(prompt('Nome/Razão Social:', unescapeHTML(c.name)));
             if(name === null) return;
-            const cnpj = prompt('CNPJ/CPF:', c.cnpj);
+            const cnpj = sanitizeInput(prompt('CNPJ/CPF:', unescapeHTML(c.cnpj)));
             if(cnpj === null) return;
-            const city = prompt('Cidade - UF:', c.city);
+            const city = sanitizeInput(prompt('Cidade - UF:', unescapeHTML(c.city)));
             if(city === null) return;
             mockClients[idx] = { ...c, name, cnpj, city };
             renderCredores();
@@ -1539,11 +1565,11 @@
         }
 
         function addNewCredor() {
-            const name = prompt('Nome ou Razão Social:');
+            const name = sanitizeInput(prompt('Nome ou Razão Social:'));
             if(!name) return;
-            const cnpj = prompt('CNPJ / CPF:');
+            const cnpj = sanitizeInput(prompt('CNPJ / CPF:'));
             if(!cnpj) return;
-            const city = prompt('Cidade - UF:', 'São Paulo - SP');
+            const city = sanitizeInput(prompt('Cidade - UF:', 'São Paulo - SP'));
             mockClients.push({ cnpj, name, city: city || '' });
             renderCredores();
             showToast(`${name} adicionado!`, 'user-plus', 'green');
@@ -1783,9 +1809,9 @@
         // FUNÇÕES AUXILIARES ADICIONAIS
         // ------------------
         function addNewProduct() {
-            const name = prompt('Nome do novo item:');
+            const name = sanitizeInput(prompt('Nome do novo item:'));
             if(!name) return;
-            const typeStr = prompt('Tipo (service / product):', 'service');
+            const typeStr = sanitizeInput(prompt('Tipo (service / product):', 'service'));
             const price = parseFloat(prompt('Preço de venda (R$):', '0'));
             if(isNaN(price)) return;
             const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
@@ -1828,9 +1854,9 @@
         }
 
         function saveNewNfeClient() {
-            const name = document.getElementById('nfe-new-name').value;
-            const cnpj = document.getElementById('nfe-new-cnpj').value;
-            const city = document.getElementById('nfe-new-city').value;
+            const name = sanitizeInput(document.getElementById('nfe-new-name').value);
+            const cnpj = sanitizeInput(document.getElementById('nfe-new-cnpj').value);
+            const city = sanitizeInput(document.getElementById('nfe-new-city').value);
             if(!name || !cnpj) {
                 showToast('Preencha nome e CNPJ/CPF!', 'alert-circle', 'orange');
                 return;
