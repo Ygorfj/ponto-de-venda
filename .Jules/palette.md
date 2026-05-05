@@ -1,0 +1,3 @@
+## 2026-05-04 - Adding ARIA labels to dynamically generated icon-only buttons
+**Learning:** In a vanilla HTML/JS project where HTML templates are generated dynamically via JavaScript (e.g., using `.map().join('')`), it's crucial to ensure that any icon-only buttons embedded within these templates (like delete or edit buttons) also receive descriptive `aria-label` attributes. Without them, screen readers will read "button" without context for dynamically added items like cart entries or team members.
+**Action:** When auditing for missing ARIA labels, also search through JS strings and template literals for `<button>` elements, not just the static HTML content.
