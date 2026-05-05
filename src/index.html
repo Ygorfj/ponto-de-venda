@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalPOS - Sistema de Gestão</title>
+    <!-- Tailwind CSS para estilização rápida e moderna -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para os gráficos do Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5', // Indigo 600
+                        secondary: '#10B981', // Emerald 500
+                        tenant: '#0F172A' // Slate 900 (simulando White Label)
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar para o carrinho */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 h-screen overflow-hidden flex font-sans text-sm md:text-base">
+
+    <!-- SIDEBAR (Navegação) -->
+    <aside class="w-20 lg:w-64 bg-tenant text-white flex flex-col transition-all duration-300">
+        <div class="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-gray-700">
+            <i data-lucide="store" class="text-secondary w-8 h-8"></i>
+            <span class="ml-3 font-bold text-xl hidden lg:block tracking-wide">MeuNegócio<span class="text-secondary text-xs align-top">PRO</span></span>
+        </div>
+        
+        <nav class="flex-1 py-6 flex flex-col gap-2 px-3">
+            <button onclick="switchTab('pdv')" id="nav-pdv" class="flex items-center p-3 rounded-lg bg-primary text-white hover:bg-primary/80 transition-colors">
+                <i data-lucide="shopping-cart" class="w-6 h-6 mx-auto lg:mx-0"></i>
+                <span class="ml-3 hidden lg:block font-medium">Frente de Caixa</span>
+            </button>
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="building-2" class="w-6 h-6 mx-auto lg:mx-0"></i>
+                <span class="ml-3 hidden lg:block font-medium">Meu Negócio</span>
+            </button>
+            <button onclick="switchTab('estoque')" id="nav-estoque" class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="package" class="w-6 h-6 mx-auto lg:mx-0"></i>
+                <span class="ml-3 hidden lg:block font-medium">Estoque & Insumos</span>
+            </button>
+            <button onclick="switchTab('equipe')" id="nav-equipe" class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="users" class="w-6 h-6 mx-auto lg:mx-0"></i>
+                <span class="ml-3 hidden lg:block font-medium">Equipe & Metas</span>
+            </button>
+            <button onclick="switchTab('credores')" id="nav-credores" class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="contact" class="w-6 h-6 mx-auto lg:mx-0"></i>
+                <span class="ml-3 hidden lg:block font-medium">Credores & Clientes</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-gray-700 flex flex-col gap-3 hidden lg:flex">
+            <div class="flex items-center justify-between text-xs text-gray-400">
+                <span>Moeda Base:</span>
+                <span class="font-bold text-white">BRL (R$)</span>
+            </div>
+            <div id="user-profile-area" class="flex items-center gap-3">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- HEADERBAR -->
+        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6 z-10 shrink-0">
+            <h2 id="page-title" class="text-xl font-bold text-gray-800">Frente de Caixa (PDV)</h2>
+            
+            <div class="flex items-center gap-4">
+                <!-- Simulador de Status de Conexão -->
+                <button onclick="toggleConnection()" id="conn-status" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-sm font-medium border border-green-200 transition-colors">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span id="conn-text">Online e Sincronizado</span>
+                </button>
+                <button onclick="showToast('Sem notificações no momento.', 'bell', 'blue')" class="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100" title="Notificações">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW: PDV -->
+        <section id="view-pdv" class="flex-1 flex overflow-hidden fade-in">
+            <!-- Grid de Produtos -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <div class="mb-6 flex gap-4">
+                    <div class="relative flex-1">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                        <input type="text" placeholder="Buscar produto ou ler código de barras..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                    </div>
+                    <select class="px-4 py-3 rounded-xl border border-gray-200 shadow-sm bg-white outline-none">
+                        <option>Todas Categorias</option>
+                        <option>Serviços</option>
+                        <option>Produtos Físicos</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="products-grid">
+                    <!-- Produtos renderizados via JS -->
+                </div>
+            </div>
+
+            <!-- Carrinho Lateral -->
+            <div class="w-80 lg:w-96 bg-white shadow-lg border-l border-gray-200 flex flex-col z-20">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="font-bold flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-5 h-5 text-primary"></i>
+                        Comanda Atual
+                    </h3>
+                    <button onclick="clearCart()" class="text-xs text-red-500 hover:text-red-700 font-medium">Limpar</button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-4" id="cart-items">
+                    <div class="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
+                        <i data-lucide="package-open" class="w-12 h-12 text-gray-300"></i>
+                        <p>Adicione itens para iniciar a venda</p>
+                    </div>
+                </div>
+
+                <!-- Resumo e Pagamento -->
+                <div class="p-4 border-t border-gray-200 bg-gray-50">
+                    <div class="flex justify-between mb-2 text-sm">
+                        <span class="text-gray-500">Subtotal</span>
+                        <span class="font-medium" id="cart-subtotal">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between mb-4 text-sm">
+                        <span class="text-gray-500 flex items-center gap-1 cursor-help" title="Imposto calculado por região">
+                            Impostos (10%) <i data-lucide="info" class="w-3 h-3"></i>
+                        </span>
+                        <span class="font-medium" id="cart-tax">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between mb-6 text-lg font-bold">
+                        <span>Total</span>
+                        <span class="text-primary text-2xl" id="cart-total">R$ 0,00</span>
+                    </div>
+                    <button onclick="checkout()" id="btn-checkout" class="w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-200 transition-all transform active:scale-95 flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i data-lucide="credit-card" class="w-5 h-5"></i>
+                        Cobrar R$ 0,00
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: DASHBOARD (Oculto por padrão) -->
+        <section id="view-dashboard" class="flex-1 overflow-y-auto p-6 hidden fade-in bg-gray-50">
+            
+            <!-- Cadastro do Negócio -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i data-lucide="info" class="w-5 h-5 text-primary"></i>
+                    Informações Institucionais
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Tipo de Negócio</label>
+                        <select id="biz-type" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm">
+                            <option value="servico">Prestação de Serviços</option>
+                            <option value="comercio">Comércio Varejista</option>
+                            <option value="misto">Misto (Serviço e Comércio)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Porte da Empresa</label>
+                        <select id="biz-size" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm">
+                            <option value="mei">MEI (Microempreendedor)</option>
+                            <option value="me">ME (Microempresa)</option>
+                            <option value="epp">EPP (Pequeno Porte)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Regime Tributário</label>
+                        <select id="biz-tax" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm">
+                            <option value="simples">Simples Nacional</option>
+                            <option value="lucro_presumido">Lucro Presumido</option>
+                            <option value="lucro_real">Lucro Real</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+                    <button onclick="saveBusinessData()" class="bg-secondary hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 shadow-sm shadow-emerald-100">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        Atualizar Cadastro
+                    </button>
+                </div>
+            </div>
+
+            <!-- Certificado Digital -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i data-lucide="key" class="w-5 h-5 text-primary"></i>
+                    Certificado Digital (NFe/NFCe)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Arquivo PFX (A1)</label>
+                        <input type="file" id="cert-file" accept=".pfx,.p12" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-600 cursor-pointer focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Senha do Certificado</label>
+                        <input type="password" id="cert-pass" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none text-sm" placeholder="Digite a senha do certificado">
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-3 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                    <i data-lucide="shield-alert" class="w-5 h-5 text-blue-600"></i>
+                    <p class="text-xs text-blue-800">Status: <span id="cert-status" class="font-bold text-gray-500">Nenhum certificado configurado</span></p>
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button onclick="saveCertificate()" class="bg-primary hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 shadow-sm">
+                        <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                        Configurar Certificado
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPIs de Faturamento -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Faturamento Semanal -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="calendar-range" class="w-16 h-16"></i>
+                    </div>
+                    <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Faturamento Semanal</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-3xl font-black text-gray-800">R$ 5.420,00</h3>
+                        <span class="text-[10px] text-gray-400 font-medium">Seg a Dom</span>
+                    </div>
+                    <div class="mt-4 flex items-center gap-2">
+                        <span class="flex items-center text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full">
+                            <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +8.2%
+                        </span>
+                        <p class="text-[10px] text-gray-400">vs. semana passada (R$ 5.010)</p>
+                    </div>
+                </div>
+
+                <!-- Faturamento Mensal -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="bar-chart-3" class="w-16 h-16"></i>
+                    </div>
+                    <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Faturamento Mensal</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-3xl font-black text-gray-800">R$ 22.150,00</h3>
+                        <span class="text-[10px] text-gray-400 font-medium">Maio/2026</span>
+                    </div>
+                    <div class="mt-4 flex items-center gap-2">
+                        <span class="flex items-center text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full">
+                            <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +12.5%
+                        </span>
+                        <p class="text-[10px] text-gray-400">vs. mês passado (R$ 19.680)</p>
+                    </div>
+                </div>
+
+                <!-- Volume de Vendas Hoje -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="shopping-bag" class="w-16 h-16 text-primary"></i>
+                    </div>
+                    <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Vendas Realizadas Hoje</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-3xl font-black text-primary">42</h3>
+                        <span class="text-[10px] text-gray-400 font-medium">operações</span>
+                    </div>
+                    <div class="mt-4 flex items-center gap-2">
+                        <span class="flex items-center text-xs font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">
+                            <i data-lucide="minus" class="w-3 h-3 mr-1"></i> Estável
+                        </span>
+                        <p class="text-[10px] text-gray-400">Mesma média de ontem</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desempenho Diário e Produtividade -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Vendas por Dia (Última Semana) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-bold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="calendar-days" class="w-5 h-5 text-indigo-500"></i>
+                            Vendas por Dia (Últimos 7 dias)
+                        </h4>
+                        <span class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full font-bold uppercase">Volume</span>
+                    </div>
+                    <div class="flex items-end justify-between h-32 px-2">
+                        <div class="flex flex-col items-center gap-2 w-full">
+                            <div class="w-full max-w-[20px] bg-gray-100 rounded-t-sm relative group">
+                                <div class="bg-primary/30 w-full h-[60%] rounded-t-sm group-hover:bg-primary transition-colors"></div>
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 opacity-0 group-hover:opacity-100">18</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400 font-medium">Seg</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 w-full">
+                            <div class="w-full max-w-[20px] bg-gray-100 rounded-t-sm relative group">
+                                <div class="bg-primary/30 w-full h-[75%] rounded-t-sm group-hover:bg-primary transition-colors"></div>
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 opacity-0 group-hover:opacity-100">24</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400 font-medium">Ter</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 w-full">
+                            <div class="w-full max-w-[20px] bg-gray-100 rounded-t-sm relative group">
+                                <div class="bg-primary/30 w-full h-[90%] rounded-t-sm group-hover:bg-primary transition-colors"></div>
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 opacity-0 group-hover:opacity-100">32</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400 font-medium">Qua</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 w-full">
+                            <div class="w-full max-w-[20px] bg-gray-100 rounded-t-sm relative group">
+                                <div class="bg-primary/30 w-full h-[50%] rounded-t-sm group-hover:bg-primary transition-colors"></div>
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 opacity-0 group-hover:opacity-100">15</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400 font-medium">Qui</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 w-full">
+                            <div class="w-full max-w-[20px] bg-gray-100 rounded-t-sm relative group">
+                                <div class="bg-primary/30 w-full h-[85%] rounded-t-sm group-hover:bg-primary transition-colors"></div>
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 opacity-0 group-hover:opacity-100">28</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400 font-medium">Sex</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 w-full">
+                            <div class="w-full max-w-[20px] bg-gray-100 rounded-t-sm relative group">
+                                <div class="bg-primary/30 w-full h-[100%] rounded-t-sm group-hover:bg-primary transition-colors"></div>
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 opacity-0 group-hover:opacity-100">42</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400 font-medium font-bold text-primary">Hoje</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 w-full opacity-30">
+                            <div class="w-full max-w-[20px] bg-gray-100 rounded-t-sm"></div>
+                            <span class="text-[10px] text-gray-400 font-medium">Dom</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ranking de Produtividade (Mini) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-bold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="medal" class="w-5 h-5 text-yellow-500"></i>
+                            Produtividade da Equipe
+                        </h4>
+                        <button onclick="switchTab('equipe')" class="text-[10px] text-primary font-bold hover:underline">Ver Todos</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Ana+Costa&background=10B981&color=fff" class="w-8 h-8 rounded-full">
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-xs font-bold text-gray-700">Ana Costa</span>
+                                    <span class="text-xs font-bold text-secondary">85%</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                    <div class="bg-secondary h-1.5 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=João+Silva&background=4F46E5&color=fff" class="w-8 h-8 rounded-full">
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-xs font-bold text-gray-700">João Silva</span>
+                                    <span class="text-xs font-bold text-primary">60%</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                    <div class="bg-primary h-1.5 rounded-full" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Vendas Detalhado -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+                <div class="p-6 border-b border-gray-100 bg-gray-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h4 class="font-bold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="search" class="w-5 h-5 text-primary"></i>
+                            Explorador de Vendas
+                        </h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Consulte vendas por data e detalhes de operação</p>
+                    </div>
+                    <div class="flex items-center gap-3 bg-white p-2 rounded-xl border border-gray-200 shadow-sm">
+                        <label class="text-xs font-bold text-gray-400 uppercase ml-2">Data:</label>
+                        <input type="date" id="sales-filter-date" onchange="renderSalesHistory()" class="text-sm font-bold text-gray-700 outline-none border-none bg-transparent cursor-pointer">
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-[10px] uppercase text-gray-500 font-black tracking-widest">
+                                <th class="p-4">Horário</th>
+                                <th class="p-4">Atendimento</th>
+                                <th class="p-4">Cliente</th>
+                                <th class="p-4">Itens Vendidos</th>
+                                <th class="p-4">Total</th>
+                                <th class="p-4 text-right">Fiscal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-history-tbody" class="divide-y divide-gray-50 text-sm">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Seção de Estoque Crítico (Alerta) -->
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-6 flex items-center justify-between group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center animate-pulse">
+                        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-red-800">Atenção ao Estoque</h4>
+                        <p class="text-xs text-red-600">Você tem 3 itens abaixo do limite de segurança. Isso pode afetar suas vendas de amanhã.</p>
+                    </div>
+                </div>
+                <button onclick="switchTab('estoque')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                    Ver Itens
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW: ESTOQUE -->
+        <section id="view-estoque" class="flex-1 overflow-y-auto p-6 hidden fade-in bg-gray-50">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">Estoque e Insumos</h3>
+                    <p class="text-gray-500 text-sm">Gerencie produtos físicos e fichas técnicas de serviços (BOM).</p>
+                </div>
+                <button onclick="addNewProduct()" class="bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    Novo Item
+                </button>
+            </div>
+
+            <!-- Grid de Produtos e Serviços -->
+            <div class="mb-6">
+                <h4 class="font-bold text-gray-700 flex items-center gap-2 text-sm uppercase mb-4">
+                    <i data-lucide="package" class="w-4 h-4 text-primary"></i>
+                    Produtos e Serviços
+                </h4>
+                <div id="inventory-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Cards preenchidos via JS -->
+                </div>
+            </div>
+
+            <!-- Tabela de Insumos -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                    <h4 class="font-bold text-gray-700 flex items-center gap-2 text-sm uppercase">
+                        <i data-lucide="beaker" class="w-4 h-4 text-orange-500"></i>
+                        Insumos de Operação
+                    </h4>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Estoque de Matéria-Prima</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500">
+                                <th class="p-4 font-bold">Item</th>
+                                <th class="p-4 font-bold">Preço Base</th>
+                                <th class="p-4 font-bold">Quantidade</th>
+                                <th class="p-4 font-bold">Unid. Medida</th>
+                                <th class="p-4 font-bold text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="insumos-table-body" class="divide-y divide-gray-100">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: EQUIPE -->
+        <section id="view-equipe" class="flex-1 overflow-y-auto p-6 hidden fade-in bg-gray-50">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">Equipe & Metas</h3>
+                    <p class="text-gray-500 text-sm">Controle de ponto, produtividade e gamificação do seu time.</p>
+                </div>
+                <button id="btn-add-member" onclick="addTeamMember()" class="bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    Adicionar Membro
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Membros e Check-in -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="clock" class="w-5 h-5 text-blue-500"></i>
+                        Check-in de Hoje
+                    </h4>
+                    <div class="space-y-4" id="team-list">
+                        <!-- Renderizado via JS -->
+                    </div>
+                </div>
+
+                <!-- Ranking / Gamificação -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="trophy" class="w-5 h-5 text-yellow-500"></i>
+                            Ranking de Vendas
+                        </h4>
+                        <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-bold">Mês Atual</span>
+                    </div>
+                    
+                    <div class="space-y-4" id="ranking-list">
+                        <!-- Renderizado via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: CREDORES E CLIENTES -->
+        <section id="view-credores" class="flex-1 overflow-y-auto p-6 hidden fade-in bg-gray-50">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">Credores & Clientes</h3>
+                    <p class="text-gray-500 text-sm">Gerencie o cadastro de clientes para emissão de nota fiscal e contas a receber.</p>
+                </div>
+                <button onclick="addNewCredor()" class="bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    Novo Cadastro
+                </button>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500">
+                            <th class="p-4 font-bold">Cliente/Credor</th>
+                            <th class="p-4 font-bold">CNPJ/CPF</th>
+                            <th class="p-4 font-bold">Cidade</th>
+                            <th class="p-4 font-bold text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="credores-table-body" class="divide-y divide-gray-100">
+                        <!-- Preenchido via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MODAL CHECKOUT OPÇÕES -->
+        <div id="checkout-modal" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden fade-in p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-2 text-center">Finalizar Venda</h3>
+                <div class="text-center mb-6">
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-widest">Total a Pagar</p>
+                    <p class="text-3xl font-black text-primary" id="checkout-total-display">R$ 0,00</p>
+                </div>
+
+                <!-- Meio de Pagamento -->
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-3">Selecione o Meio de Pagamento</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="selectPaymentMethod('pix')" id="pay-pix" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-100 hover:border-primary transition-all group">
+                            <i data-lucide="qr-code" class="w-6 h-6 text-gray-400 mb-1 payment-icon"></i>
+                            <span class="text-[10px] font-bold text-gray-500 payment-label">PIX</span>
+                        </button>
+                        <button onclick="selectPaymentMethod('debito')" id="pay-debito" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-100 hover:border-primary transition-all group">
+                            <i data-lucide="credit-card" class="w-6 h-6 text-gray-400 mb-1 payment-icon"></i>
+                            <span class="text-[10px] font-bold text-gray-500 payment-label">DÉBITO</span>
+                        </button>
+                        <button onclick="selectPaymentMethod('credito')" id="pay-credito" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-100 hover:border-primary transition-all group">
+                            <i data-lucide="layers" class="w-6 h-6 text-gray-400 mb-1 payment-icon"></i>
+                            <span class="text-[10px] font-bold text-gray-500 payment-label">CRÉDITO</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Opções de Parcelamento (Oculto por padrão) -->
+                <div id="installment-area" class="hidden mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100 fade-in">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Parcelas (Crédito)</label>
+                    <select id="checkout-installments" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-primary font-bold text-gray-700">
+                        <option value="1">1x (À Vista)</option>
+                        <option value="2">2x sem juros</option>
+                        <option value="3">3x sem juros</option>
+                        <option value="4">4x sem juros</option>
+                        <option value="5">5x sem juros</option>
+                        <option value="6">6x sem juros</option>
+                        <option value="12">12x com juros operacionais</option>
+                    </select>
+                </div>
+                
+                <div id="checkout-actions" class="space-y-3 opacity-30 pointer-events-none transition-opacity">
+                    <button onclick="finishCheckout(false)" class="w-full bg-gray-800 hover:bg-black text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2">
+                        <i data-lucide="receipt" class="w-5 h-5"></i>
+                        Confirmar com Recibo
+                    </button>
+                    <button onclick="openNfeModal()" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-indigo-200">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        Confirmar e Emitir Nota
+                    </button>
+                </div>
+                
+                <button onclick="closeCheckoutModal()" class="mt-4 w-full text-gray-400 hover:text-gray-600 text-sm font-medium py-2">Voltar ao Carrinho</button>
+            </div>
+        </div>
+
+        <!-- MODAL NFE DADOS -->
+        <div id="nfe-modal" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden fade-in p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-primary"></i> Emissão de Nota Fiscal</h3>
+                    <button onclick="closeNfeModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                
+                <div class="mb-4 flex gap-2 p-1 bg-gray-100 rounded-lg" id="nfe-tab-bar">
+                    <button id="nfe-tab-existing" onclick="switchNfeTab('existing')" class="flex-1 bg-white shadow-sm py-1.5 rounded-md text-sm font-bold text-gray-800">Já Cadastrado</button>
+                    <button id="nfe-tab-new" onclick="switchNfeTab('new')" class="flex-1 text-gray-500 hover:text-gray-800 py-1.5 rounded-md text-sm font-medium">Novo Cliente</button>
+                </div>
+                <div id="nfe-new-client-form" class="hidden space-y-3 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <input type="text" id="nfe-new-name" placeholder="Nome ou Razão Social" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-primary">
+                    <input type="text" id="nfe-new-cnpj" placeholder="CNPJ / CPF" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-primary">
+                    <input type="text" id="nfe-new-city" placeholder="Cidade - UF" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-primary">
+                    <button onclick="saveNewNfeClient()" class="w-full bg-gray-800 hover:bg-black text-white text-sm font-bold py-2 rounded-lg transition-colors">Confirmar e Usar Dados</button>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Buscar por CNPJ</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="nfe-cnpj" placeholder="00.000.000/0000-00" class="flex-1 px-4 py-2 border border-gray-200 rounded-lg outline-none focus:border-primary text-sm">
+                            <button onclick="searchClientByCnpj()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 rounded-lg text-sm font-bold"><i data-lucide="search" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div id="nfe-client-data" class="hidden p-4 bg-blue-50 rounded-lg border border-blue-100">
+                        <p class="text-sm font-bold text-gray-800" id="nfe-client-name">-</p>
+                        <p class="text-xs text-gray-600" id="nfe-client-city">-</p>
+                        <p class="text-xs text-blue-600 mt-2 font-medium"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Dados validados para prefeitura</p>
+                    </div>
+                </div>
+
+                <button onclick="generateNfe()" id="btn-generate-nfe" class="mt-6 w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2 shadow-lg opacity-50 cursor-not-allowed" disabled>
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                    Gerar e Transmitir Nota
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL DETALHES DO PRODUTO / FICHA TÉCNICA -->
+        <div id="product-detail-modal" class="fixed inset-0 bg-black/50 z-[110] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <div class="flex items-center gap-4">
+                        <div id="pd-icon-bg" class="w-12 h-12 rounded-xl flex items-center justify-center">
+                            <i id="pd-icon" data-lucide="package" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 id="pd-name" class="text-xl font-bold text-gray-800">-</h3>
+                            <span id="pd-type-badge" class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">PRODUTO</span>
+                        </div>
+                    </div>
+                    <button onclick="closeProductDetails()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Informações Básicas -->
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-400 uppercase mb-4 flex items-center gap-2">
+                            <i data-lucide="info" class="w-4 h-4"></i> Dados Gerais
+                        </h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Preço de Venda</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">R$</span>
+                                    <input type="number" id="pd-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary font-bold text-gray-800">
+                                </div>
+                            </div>
+                            <div id="pd-stock-container">
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Estoque Atual</label>
+                                <input type="number" id="pd-stock" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary font-bold text-gray-800">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ficha Técnica (BOM) -->
+                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                        <h4 class="text-sm font-bold text-gray-700 uppercase mb-4 flex items-center gap-2">
+                            <i data-lucide="list-checks" class="w-4 h-4 text-orange-500"></i> Ficha Técnica (Insumos)
+                        </h4>
+                        
+                        <div id="pd-bom-list" class="space-y-2 mb-4 max-h-40 overflow-y-auto">
+                            <!-- Insumos linkados aparecem aqui -->
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-200">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Vincular novo insumo</p>
+                            <div class="flex gap-2">
+                                <select id="pd-insumo-select" class="flex-1 text-xs px-2 py-2 border border-gray-200 rounded-lg outline-none">
+                                    <!-- Options via JS -->
+                                </select>
+                                <input type="text" id="pd-insumo-qty" placeholder="ex: 100ml" class="w-20 text-xs px-2 py-2 border border-gray-200 rounded-lg outline-none">
+                                <button onclick="addInsumoToProduct()" class="bg-gray-800 text-white p-2 rounded-lg hover:bg-black transition-colors">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                    <button onclick="closeProductDetails()" class="px-6 py-2 text-gray-500 font-bold text-sm hover:text-gray-700">Cancelar</button>
+                    <button onclick="saveProductDetails()" class="bg-primary text-white px-8 py-2 rounded-lg font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA DE LOGIN (Overlay) -->
+        <div id="login-screen" class="fixed inset-0 bg-tenant z-[100] flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <div class="bg-primary p-8 text-white text-center">
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="shield-check" class="w-10 h-10"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Bem-vindo ao GlobalPOS</h2>
+                    <p class="text-white/70 text-sm mt-1">Acesse sua conta para continuar</p>
+                </div>
+                <div class="p-8">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Usuário</label>
+                            <select id="login-user-select" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50">
+                                <!-- Preenchido via JS -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Senha</label>
+                            <input type="password" id="login-password" placeholder="Digite sua senha" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary outline-none">
+                        </div>
+                        <button onclick="handleLogin()" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2">
+                            Entrar no Sistema
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <p class="text-center text-xs text-gray-400 mt-6 italic">
+                        Somente o proprietário tem acesso ao Painel do Patrão.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Inicializa ícones
+        lucide.createIcons();
+
+        // ------------------
+        // ESTADO DA APLICAÇÃO
+        // ------------------
+        let isOffline = false;
+        let cart = [];
+        let currentUser = null;
+        const TAX_RATE = 0.10; 
+
+        const teamMembers = [
+            { id: 1, name: 'Ana Costa', nickname: 'Aninha', role: 'Gerente', password: '123', avatar: 'https://ui-avatars.com/api/?name=Ana+Costa&background=10B981&color=fff', status: 'online', checkIn: '08:00', points: 450, goal: 500 },
+            { id: 2, name: 'João Silva', nickname: 'Boss', role: 'Proprietário', password: 'admin', avatar: 'https://ui-avatars.com/api/?name=Joao+Silva&background=4F46E5&color=fff', status: 'online', checkIn: '09:15', points: 320, goal: 400 },
+            { id: 3, name: 'Maria Souza', nickname: 'Ligeirinha', role: 'Operadora', password: '123', avatar: 'https://ui-avatars.com/api/?name=Maria+Souza&background=F59E0B&color=fff', status: 'offline', checkIn: null, points: 120, goal: 300 }
+        ];
+
+        function populateLoginSelect() {
+            const select = document.getElementById('login-user-select');
+            if(!select) return;
+            select.innerHTML = teamMembers.map(m => `<option value="${m.id}">${m.name} (${m.role})</option>`).join('');
+        }
+
+        function handleLogin() {
+            const userId = parseInt(document.getElementById('login-user-select').value);
+            const pass = document.getElementById('login-password').value;
+            
+            const user = teamMembers.find(m => m.id === userId);
+            
+            if (user && user.password === pass) {
+                currentUser = { ...user, role: user.role === 'Proprietário' ? 'proprietario' : 'funcionario' };
+                
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('login-password').value = ''; // Limpa senha
+                
+                updateUserProfileUI();
+                
+                const dashboardBtn = document.getElementById('nav-dashboard');
+                const addMemberBtn = document.getElementById('btn-add-member');
+                
+                if(currentUser.role !== 'proprietario') {
+                    dashboardBtn.classList.add('hidden');
+                    addMemberBtn?.classList.add('hidden');
+                } else {
+                    dashboardBtn.classList.remove('hidden');
+                    addMemberBtn?.classList.remove('hidden');
+                }
+
+                showToast(`Bem-vindo, ${currentUser.name}!`, 'user', 'green');
+                switchTab('pdv');
+            } else {
+                showToast('Senha incorreta!', 'lock', 'red');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-screen').classList.remove('hidden');
+            clearCart();
+        }
+
+        function updateUserProfileUI() {
+            const profileArea = document.getElementById('user-profile-area');
+            profileArea.innerHTML = `
+                <img src="${currentUser.avatar}" alt="User" class="w-10 h-10 rounded-full">
+                <div class="flex-1">
+                    <p class="font-medium text-sm text-white">${currentUser.name}</p>
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-tighter">${currentUser.role === 'proprietario' ? 'Dono do Negócio' : 'Operador'}</p>
+                </div>
+                <button onclick="logout()" class="text-gray-500 hover:text-red-400" title="Sair">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            `;
+            lucide.createIcons();
+        }
+
+        // Mock de Produtos Físicos e Serviços (Ficha Técnica implícita)
+        const products = [
+            { id: 1, name: 'Corte de Cabelo', type: 'service', price: 45.00, img: 'scissors', color: 'bg-purple-100 text-purple-600', stock: null, bom: [] },
+            { id: 2, name: 'Pintura (Serviço)', type: 'service', price: 120.00, img: 'paint-bucket', color: 'bg-pink-100 text-pink-600', stock: null, bom: [{name:'Tinta Capilar (Tubo)', qty:'1 un'}] },
+            { id: 3, name: 'Pomada Modeladora', type: 'product', price: 35.00, img: 'box', color: 'bg-blue-100 text-blue-600', stock: 12, bom: [] },
+            { id: 4, name: 'Shampoo Premium', type: 'product', price: 55.00, img: 'droplet', color: 'bg-cyan-100 text-cyan-600', stock: 2, bom: [] },
+            { id: 5, name: "Tinta L'Oréal", type: 'product', price: 40.00, img: 'palette', color: 'bg-orange-100 text-orange-600', stock: 5, bom: [] },
+            { id: 6, name: 'Barba Terapia', type: 'service', price: 30.00, img: 'smile', color: 'bg-indigo-100 text-indigo-600', stock: null, bom: [{name:'Shampoo Galão (5L)', qty:'50ml'}] }
+        ];
+
+        // Mock de Insumos
+        const insumos = [
+            { id: 101, name: 'Tinta Capilar (Tubo)', price: 15.50, stock: 45, unit: 'un' },
+            { id: 102, name: 'Shampoo Galão (5L)', price: 85.00, stock: 8, unit: 'gl' },
+            { id: 103, name: 'Lâminas de Barbear', price: 0.80, stock: 120, unit: 'un' },
+            { id: 104, name: 'Capa Descartável', price: 2.10, stock: 200, unit: 'un' }
+        ];
+
+        // ------------------
+        // RENDERIZAÇÃO DE EQUIPE
+        // ------------------
+        // Removido o array duplicado aqui, já definido no estado global.
+
+        function renderTeam() {
+            const teamContainer = document.getElementById('team-list');
+            const rankingContainer = document.getElementById('ranking-list');
+            if(!teamContainer || !rankingContainer) return;
+            
+            teamContainer.innerHTML = '';
+            rankingContainer.innerHTML = '';
+
+            // Renderiza Lista de Check-in
+            teamMembers.forEach(m => {
+                const isOnline = m.status === 'online';
+                const isOwner = currentUser.role === 'proprietario';
+                const canEdit = isOwner && m.role !== 'Proprietário';
+                const displayName = isOwner && m.nickname ? `${m.name} <span class="text-xs text-primary font-normal italic">"${m.nickname}"</span>` : m.name;
+
+                teamContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 group">
+                        <div class="flex items-center gap-3">
+                            <div class="relative">
+                                <img src="${m.avatar}" class="w-10 h-10 rounded-full">
+                                <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${isOnline ? 'bg-green-500' : 'bg-gray-300'}"></span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-gray-800">${displayName}</p>
+                                <p class="text-xs text-gray-500">${m.role}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="text-right">
+                                ${isOnline ? `<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded font-medium">Chegou às ${m.checkIn}</span>` : `<button onclick="doCheckIn(${m.id})" class="text-xs bg-gray-100 hover:bg-green-100 hover:text-green-700 text-gray-600 px-3 py-1 rounded font-medium transition">Fazer Check-in</button>`}
+                            </div>
+                            ${canEdit ? `
+                                <button onclick="editTeamMember(${m.id})" class="p-1.5 text-gray-400 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity" title="Editar senha/apelido">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="removeTeamMember(${m.id})" class="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Remover">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Renderiza Ranking (Ordenado por pontos)
+            const ranked = [...teamMembers].sort((a, b) => b.points - a.points);
+            ranked.forEach((m, index) => {
+                const progress = Math.min((m.points / m.goal) * 100, 100);
+                let medal = '';
+                if(index === 0) medal = 'text-yellow-500';
+                else if(index === 1) medal = 'text-gray-400';
+                else if(index === 2) medal = 'text-amber-600';
+
+                rankingContainer.innerHTML += `
+                    <div class="flex items-center gap-3 p-2">
+                        <div class="w-6 text-center font-bold text-lg ${medal}">${index + 1}º</div>
+                        <img src="${m.avatar}" class="w-8 h-8 rounded-full">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-end mb-1">
+                                <p class="font-bold text-sm text-gray-800">${m.name}</p>
+                                <span class="text-xs font-bold text-primary">${m.points} pts</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-primary h-1.5 rounded-full" style="width: ${progress}%"></div>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1 text-right">Meta: ${m.goal} pts</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lucide.createIcons();
+        }
+
+        function addTeamMember() {
+            if(currentUser.role !== 'proprietario') return;
+            
+            const name = prompt("Nome do novo membro:");
+            if(!name) return;
+            
+            const role = prompt("Cargo (Ex: Vendedor, Caixa, Gerente):", "Vendedor");
+            if(!role) return;
+
+            const pass = prompt("Defina uma senha inicial:", "123");
+            const nick = prompt("Apelido (visível apenas para você):", "");
+
+            const newId = teamMembers.length > 0 ? Math.max(...teamMembers.map(m => m.id)) + 1 : 1;
+            
+            teamMembers.push({
+                id: newId,
+                name: name,
+                nickname: nick,
+                role: role,
+                password: pass || '123',
+                avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`,
+                status: 'offline',
+                checkIn: null,
+                points: 0,
+                goal: 300
+            });
+
+            renderTeam();
+            populateLoginSelect();
+            showToast(`${name} adicionado à equipe!`, 'user-plus', 'green');
+        }
+
+        function editTeamMember(id) {
+            if(currentUser.role !== 'proprietario') return;
+            const member = teamMembers.find(m => m.id === id);
+            if(!member) return;
+
+            const newPass = prompt(`Alterar senha para ${member.name}:`, member.password);
+            const newNick = prompt(`Alterar apelido secreto para ${member.name}:`, member.nickname || "");
+
+            if(newPass !== null) member.password = newPass;
+            if(newNick !== null) member.nickname = newNick;
+
+            renderTeam();
+            showToast('Dados do membro atualizados!', 'edit-3', 'blue');
+        }
+
+        function removeTeamMember(id) {
+            if(currentUser.role !== 'proprietario') return;
+            
+            const member = teamMembers.find(m => m.id === id);
+            if(!member) return;
+
+            if(confirm(`Tem certeza que deseja remover ${member.name} da equipe?`)) {
+                const index = teamMembers.indexOf(member);
+                teamMembers.splice(index, 1);
+                renderTeam();
+                showToast('Membro removido.', 'trash-2', 'orange');
+            }
+        }
+
+        // ------------------
+        // RENDERIZAÇÃO DO ESTOQUE
+        // ------------------
+        let currentEditingProductId = null;
+
+        function renderInventory() {
+            const productsGrid = document.getElementById('inventory-products-grid');
+            const tbodyInsumos = document.getElementById('insumos-table-body');
+            
+            if(productsGrid) {
+                productsGrid.innerHTML = '';
+                products.forEach(p => {
+                    const isLow = p.type === 'product' && p.stock <= 3;
+                    const hasBom = p.bom && p.bom.length > 0;
+
+                    productsGrid.innerHTML += `
+                        <div onclick="openProductDetails(${p.id})" class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-2 h-full ${p.type === 'service' ? 'bg-indigo-400' : 'bg-amber-400'} opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="w-12 h-12 rounded-xl ${p.color} flex items-center justify-center shadow-inner">
+                                    <i data-lucide="${p.img}" class="w-6 h-6"></i>
+                                </div>
+                                <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${p.type === 'service' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-700'}">
+                                    ${p.type === 'service' ? 'Serviço' : 'Produto'}
+                                </span>
+                            </div>
+
+                            <h4 class="font-bold text-gray-800 mb-1 group-hover:text-primary transition-colors">${p.name}</h4>
+                            <p class="text-xl font-black text-gray-900 mb-3">R$ ${p.price.toFixed(2).replace('.', ',')}</p>
+
+                            <div class="flex items-center justify-between pt-3 border-t border-gray-50">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
+                                        ${p.type === 'product' ? 'Estoque' : 'Ficha Técnica'}
+                                    </span>
+                                    <span class="text-sm font-bold ${isLow ? 'text-red-500' : 'text-gray-700'}">
+                                        ${p.type === 'product' ? p.stock + ' un' : (hasBom ? p.bom.length + ' itens' : 'Vazia')}
+                                    </span>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-primary transition-colors"></i>
+                            </div>
+
+                            ${isLow ? `
+                                <div class="mt-3 flex items-center gap-1.5 text-red-500 animate-pulse">
+                                    <i data-lucide="alert-circle" class="w-3 h-3"></i>
+                                    <span class="text-[10px] font-bold">Reposição Necessária</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            if(tbodyInsumos) {
+                tbodyInsumos.innerHTML = '';
+                insumos.forEach(i => {
+                    tbodyInsumos.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-orange-400"></div>
+                                    <span class="font-bold text-gray-800">${i.name}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 font-medium text-gray-600">R$ ${i.price.toFixed(2).replace('.', ',')}</td>
+                            <td class="p-4">
+                                <span class="font-black text-gray-800">${i.stock}</span>
+                            </td>
+                            <td class="p-4 text-[10px] text-gray-400 uppercase font-black tracking-widest">${i.unit}</td>
+                            <td class="p-4 text-right">
+                                <button class="text-gray-300 hover:text-primary p-2"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            lucide.createIcons();
+        }
+
+        function openProductDetails(id) {
+            const p = products.find(prod => prod.id === id);
+            if(!p) return;
+            currentEditingProductId = id;
+
+            // Preenche dados do modal
+            document.getElementById('pd-name').innerText = p.name;
+            document.getElementById('pd-price').value = p.price;
+            
+            const badge = document.getElementById('pd-type-badge');
+            badge.innerText = p.type === 'service' ? 'SERVIÇO' : 'PRODUTO';
+            badge.className = `text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${p.type === 'service' ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'}`;
+
+            const iconBg = document.getElementById('pd-icon-bg');
+            iconBg.className = `w-12 h-12 rounded-xl flex items-center justify-center ${p.color}`;
+            document.getElementById('pd-icon').setAttribute('data-lucide', p.img);
+
+            const stockCont = document.getElementById('pd-stock-container');
+            if(p.type === 'service') {
+                stockCont.classList.add('hidden');
+            } else {
+                stockCont.classList.remove('hidden');
+                document.getElementById('pd-stock').value = p.stock || 0;
+            }
+
+            // Popula Select de Insumos
+            const select = document.getElementById('pd-insumo-select');
+            select.innerHTML = '<option value="">Selecione um insumo...</option>' + 
+                insumos.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+
+            renderBOMList(p);
+            
+            document.getElementById('product-detail-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function renderBOMList(product) {
+            const container = document.getElementById('pd-bom-list');
+            if(product.bom.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 italic py-4 text-center">Nenhum insumo vinculado</p>';
+                return;
+            }
+
+            container.innerHTML = product.bom.map((item, idx) => `
+                <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-200 group">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-gray-800">${item.name}</span>
+                        <span class="text-[10px] text-primary font-bold">Consumo: ${item.qty}</span>
+                    </div>
+                    <button onclick="removeInsumoFromProduct(${idx})" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function addInsumoToProduct() {
+            const select = document.getElementById('pd-insumo-select');
+            const qtyInput = document.getElementById('pd-insumo-qty');
+            const insumoId = parseInt(select.value);
+            const qty = qtyInput.value;
+
+            if(!insumoId || !qty) {
+                showToast('Selecione um insumo e a quantidade!', 'alert-circle', 'orange');
+                return;
+            }
+
+            const insumo = insumos.find(i => i.id === insumoId);
+            const product = products.find(p => p.id === currentEditingProductId);
+            
+            product.bom.push({ name: insumo.name, qty: qty });
+            renderBOMList(product);
+            
+            select.value = '';
+            qtyInput.value = '';
+            showToast('Insumo vinculado!', 'link', 'green');
+        }
+
+        function removeInsumoFromProduct(idx) {
+            const product = products.find(p => p.id === currentEditingProductId);
+            product.bom.splice(idx, 1);
+            renderBOMList(product);
+        }
+
+        function closeProductDetails() {
+            document.getElementById('product-detail-modal').classList.add('hidden');
+            currentEditingProductId = null;
+        }
+
+        function saveProductDetails() {
+            const product = products.find(p => p.id === currentEditingProductId);
+            product.price = parseFloat(document.getElementById('pd-price').value);
+            if(product.type === 'product') {
+                product.stock = parseInt(document.getElementById('pd-stock').value);
+            }
+            
+            renderInventory();
+            closeProductDetails();
+            showToast('Alterações salvas!', 'save', 'green');
+        }
+
+        // ------------------
+        // RENDERIZAÇÃO DO PDV
+        // ------------------
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            
+            products.forEach(p => {
+                const isLowStock = p.type === 'product' && p.stock <= 3;
+                
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md hover:border-primary transition-all group relative`;
+                card.onclick = () => addToCart(p);
+                
+                card.innerHTML = `
+                    ${isLowStock ? `<span class="absolute top-2 right-2 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span></span>` : ''}
+                    <div class="w-12 h-12 rounded-lg ${p.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                        <i data-lucide="${p.img}"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">${p.type === 'service' ? 'Serviço' : 'Produto'}</span>
+                        <span class="font-bold text-gray-800 leading-tight mb-2">${p.name}</span>
+                        <span class="text-primary font-bold">R$ ${p.price.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons(); // re-init icons for dynamic content
+        }
+
+        function addToCart(product) {
+            const existing = cart.find(item => item.id === product.id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
+            
+            // Simula aviso de insumo
+            if(product.insumo) {
+                showToast(`Serviço adicionado. Insumo descontará: ${product.insumo}`, 'info', 'blue');
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        function clearCart() {
+            cart = [];
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const taxEl = document.getElementById('cart-tax');
+            const totalEl = document.getElementById('cart-total');
+            const btnCheckout = document.getElementById('btn-checkout');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
+                        <i data-lucide="package-open" class="w-12 h-12 text-gray-300"></i>
+                        <p>Adicione itens para iniciar a venda</p>
+                    </div>`;
+                subtotalEl.innerText = 'R$ 0,00';
+                taxEl.innerText = 'R$ 0,00';
+                totalEl.innerText = 'R$ 0,00';
+                btnCheckout.innerText = 'Cobrar R$ 0,00';
+                btnCheckout.disabled = true;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = '';
+            let subtotal = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                subtotal += itemTotal;
+                
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100 mb-2 shadow-sm fade-in">
+                        <div class="flex-1">
+                            <p class="font-bold text-gray-800 text-sm truncate">${item.name}</p>
+                            <p class="text-xs text-gray-500">${item.qty}x R$ ${item.price.toFixed(2).replace('.', ',')}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-gray-800">R$ ${itemTotal.toFixed(2).replace('.', ',')}</span>
+                            <button onclick="removeFromCart(${item.id})" class="text-red-400 hover:text-red-600 bg-red-50 p-1 rounded">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const tax = subtotal * TAX_RATE;
+            const total = subtotal + tax;
+
+            subtotalEl.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            taxEl.innerText = `R$ ${tax.toFixed(2).replace('.', ',')}`;
+            totalEl.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            btnCheckout.innerHTML = `<i data-lucide="credit-card" class="w-5 h-5"></i> Cobrar R$ ${total.toFixed(2).replace('.', ',')}`;
+            btnCheckout.disabled = false;
+            
+            lucide.createIcons();
+            
+            // Rola para baixo no carrinho
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Histórico de Vendas Local Global
+        let selectedNfeClient = null; 
+        let selectedPaymentMethod = null;
+        let selectedInstallments = 1;
+
+        const salesHistory = [
+            // Mock de vendas passadas para teste
+            { date: '2026-05-03', time: '14:20', employee: 'Ana Costa', client: 'Empresa Alpha Tech', items: [{name: 'Corte Degradê', qty: 1, total: 45}], total: 45, nfe: true, payment: 'Crédito (1x)' },
+            { date: '2026-05-03', time: '16:05', employee: 'João Silva', client: 'Consumidor Final', items: [{name: 'Barba Terapia', qty: 2, total: 70}], total: 70, nfe: false, payment: 'Pix' }
+        ];
+
+        function checkout() {
+            if(cart.length === 0) return;
+            
+            // Calcula total novamente para o modal
+            let subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+            const tax = subtotal * TAX_RATE;
+            const total = subtotal + tax;
+            document.getElementById('checkout-total-display').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+
+            // Reset do estado do modal
+            selectedPaymentMethod = null;
+            selectedInstallments = 1;
+            document.getElementById('installment-area').classList.add('hidden');
+            document.getElementById('checkout-actions').classList.add('opacity-30', 'pointer-events-none');
+            
+            // Reset visual dos botões de pagamento
+            ['pix', 'debito', 'credito'].forEach(m => {
+                const btn = document.getElementById(`pay-${m}`);
+                const icon = btn.querySelector('.payment-icon');
+                const label = btn.querySelector('.payment-label');
+                
+                btn.classList.remove('border-primary', 'bg-indigo-50');
+                if(icon) {
+                    icon.classList.remove('text-primary');
+                    icon.classList.add('text-gray-400');
+                }
+                if(label) {
+                    label.classList.remove('text-primary');
+                    label.classList.add('text-gray-500');
+                }
+            });
+
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Toggle visual
+            ['pix', 'debito', 'credito'].forEach(m => {
+                const btn = document.getElementById(`pay-${m}`);
+                const icon = btn.querySelector('.payment-icon');
+                const label = btn.querySelector('.payment-label');
+
+                if(m === method) {
+                    btn.classList.add('border-primary', 'bg-indigo-50');
+                    if(icon) {
+                        icon.classList.remove('text-gray-400');
+                        icon.classList.add('text-primary');
+                    }
+                    if(label) {
+                        label.classList.remove('text-gray-500');
+                        label.classList.add('text-primary');
+                    }
+                } else {
+                    btn.classList.remove('border-primary', 'bg-indigo-50');
+                    if(icon) {
+                        icon.classList.remove('text-primary');
+                        icon.classList.add('text-gray-400');
+                    }
+                    if(label) {
+                        label.classList.remove('text-primary');
+                        label.classList.add('text-gray-500');
+                    }
+                }
+            });
+
+            // Gerencia área de parcelas
+            const instArea = document.getElementById('installment-area');
+            if(method === 'credito') {
+                instArea.classList.remove('hidden');
+            } else {
+                instArea.classList.add('hidden');
+            }
+
+            // Habilita ações
+            document.getElementById('checkout-actions').classList.remove('opacity-30', 'pointer-events-none');
+            lucide.createIcons();
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function finishCheckout(hasNfe) {
+            if(cart.length === 0) return;
+
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+            const installments = document.getElementById('checkout-installments').value;
+            const paymentText = selectedPaymentMethod === 'credito' ? `Crédito (${installments}x)` : 
+                               (selectedPaymentMethod === 'pix' ? 'Pix' : 'Débito');
+
+            // Registra a venda completa no histórico
+            salesHistory.unshift({
+                date: dateStr,
+                time: timeStr,
+                employee: currentUser ? currentUser.name : 'Sistema',
+                client: selectedNfeClient ? selectedNfeClient.name : 'Consumidor Final',
+                items: cart.map(i => ({ name: i.name, qty: i.qty, total: i.price * i.qty })),
+                total: cart.reduce((acc, i) => acc + (i.price * i.qty), 0) * (1 + TAX_RATE),
+                nfe: hasNfe,
+                payment: paymentText
+            });
+
+            // Limpa tudo
+            clearCart();
+            closeCheckoutModal();
+            selectedNfeClient = null; 
+            
+            if(hasNfe) {
+                showToast('Venda e Nota Fiscal geradas com sucesso!', 'check-circle', 'green');
+            } else if(isOffline) {
+                showToast('Venda salva localmente!', 'wifi-off', 'orange');
+            } else {
+                showToast('Venda finalizada com sucesso!', 'check-circle', 'green');
+            }
+            
+            renderSalesHistory();
+        }
+
+        function renderSalesHistory() {
+            const tbody = document.getElementById('sales-history-tbody');
+            const dateEl = document.getElementById('sales-filter-date');
+            if(!tbody || !dateEl) return;
+            const filterDate = dateEl.value;
+
+            const filtered = salesHistory.filter(s => s.date === filterDate);
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-12 text-center">
+                    <i data-lucide="calendar-x" class="w-12 h-12 text-gray-200 mx-auto mb-3"></i>
+                    <p class="text-gray-400 italic">Nenhuma venda registrada para esta data.</p>
+                </td></tr>`;
+                lucide.createIcons();
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="p-4 font-bold text-gray-400 text-xs">${s.time}</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600">
+                                ${s.employee.charAt(0)}
+                            </div>
+                            <span class="text-xs font-bold text-gray-700">${s.employee}</span>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <span class="text-xs text-gray-600 font-medium">${s.client}</span>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex flex-col gap-1">
+                            ${s.items.map(i => `
+                                <span class="text-[10px] text-gray-500 font-medium">
+                                    <b class="text-gray-800">${i.name}</b> (${i.qty}x)
+                                </span>
+                            `).join('')}
+                            <span class="text-[10px] text-primary font-bold mt-1">💳 Pagamento: ${s.payment || 'N/A'}</span>
+                        </div>
+                    </td>
+                    <td class="p-4 font-black text-gray-900">R$ ${s.total.toFixed(2).replace('.', ',')}</td>
+                    <td class="p-4 text-right">
+                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${s.nfe ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-100 text-gray-400 border border-gray-200'}">
+                            ${s.nfe ? 'NFe Emitida' : 'Recibo'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // ------------------
+        // NFE E CREDORES
+        // ------------------
+        const mockClients = [
+            { cnpj: '11.222.333/0001-44', name: 'Empresa Alpha Tech LTDA', city: 'São Paulo - SP' },
+            { cnpj: '55.666.777/0001-88', name: 'Comércio Beta S/A', city: 'Rio de Janeiro - RJ' }
+        ];
+
+        function renderCredores() {
+            const tbody = document.getElementById('credores-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            mockClients.forEach((c, idx) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-4 font-bold text-gray-800">${c.name}</td>
+                        <td class="p-4 text-sm text-gray-600">${c.cnpj}</td>
+                        <td class="p-4 text-sm text-gray-600">${c.city}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="editCredor(${idx})" class="text-gray-400 hover:text-primary p-1" title="Editar"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            <button onclick="removeCredor(${idx})" class="text-gray-400 hover:text-red-500 p-1 ml-1" title="Remover"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function editCredor(idx) {
+            const c = mockClients[idx];
+            const name = prompt('Nome/Razão Social:', c.name);
+            if(name === null) return;
+            const cnpj = prompt('CNPJ/CPF:', c.cnpj);
+            if(cnpj === null) return;
+            const city = prompt('Cidade - UF:', c.city);
+            if(city === null) return;
+            mockClients[idx] = { ...c, name, cnpj, city };
+            renderCredores();
+            showToast('Credor atualizado!', 'check', 'green');
+        }
+
+        function removeCredor(idx) {
+            const c = mockClients[idx];
+            if(confirm(`Remover ${c.name}?`)) {
+                mockClients.splice(idx, 1);
+                renderCredores();
+                showToast('Credor removido.', 'trash-2', 'orange');
+            }
+        }
+
+        function addNewCredor() {
+            const name = prompt('Nome ou Razão Social:');
+            if(!name) return;
+            const cnpj = prompt('CNPJ / CPF:');
+            if(!cnpj) return;
+            const city = prompt('Cidade - UF:', 'São Paulo - SP');
+            mockClients.push({ cnpj, name, city: city || '' });
+            renderCredores();
+            showToast(`${name} adicionado!`, 'user-plus', 'green');
+        }
+
+        function openNfeModal() {
+            closeCheckoutModal();
+            document.getElementById('nfe-modal').classList.remove('hidden');
+            document.getElementById('nfe-cnpj').value = '';
+            document.getElementById('nfe-client-data').classList.add('hidden');
+            document.getElementById('btn-generate-nfe').disabled = true;
+            document.getElementById('btn-generate-nfe').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        function closeNfeModal() {
+            document.getElementById('nfe-modal').classList.add('hidden');
+        }
+
+        function searchClientByCnpj() {
+            const val = document.getElementById('nfe-cnpj').value;
+            const client = mockClients.find(c => c.cnpj === val || val === '11'); // '11' shortcut for testing
+            
+            if(client) {
+                document.getElementById('nfe-client-name').innerText = client.name;
+                document.getElementById('nfe-client-city').innerText = client.city;
+                document.getElementById('nfe-client-data').classList.remove('hidden');
+                
+                const btn = document.getElementById('btn-generate-nfe');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                showToast('Cliente localizado!', 'check', 'green');
+            } else {
+                showToast('CNPJ não encontrado na base.', 'search', 'orange');
+                document.getElementById('nfe-client-data').classList.add('hidden');
+            }
+        }
+
+        function generateNfe() {
+            const certConfigured = localStorage.getItem('pos_cert_configured') === 'true';
+            if(!certConfigured) {
+                showToast('Erro: Certificado não configurado!', 'shield-alert', 'red');
+                return;
+            }
+            
+            // Em NFe, fechamos o modal e processamos
+            closeNfeModal();
+            showToast('Transmitindo Nota para Prefeitura...', 'loader', 'blue');
+            
+            // Chamamos o finishCheckout que já limpa o carrinho
+            setTimeout(() => {
+                finishCheckout(true);
+            }, 1000);
+        }
+
+        function saveCertificate() {
+            const pass = document.getElementById('cert-pass').value;
+            if(!pass) {
+                showToast('A senha do certificado é obrigatória!', 'alert-circle', 'red');
+                return;
+            }
+            localStorage.setItem('pos_cert_configured', 'true');
+            document.getElementById('cert-status').innerText = 'A1 Configurado Ativo';
+            document.getElementById('cert-status').classList.replace('text-gray-500', 'text-green-600');
+            showToast('Certificado instalado com sucesso!', 'shield-check', 'green');
+        }
+
+        // ------------------
+        // NAVEGAÇÃO E UI
+        // ------------------
+        function switchTab(tabId) {
+            // Regra de Negócio: Somente proprietário vê o Dashboard
+            if(tabId === 'dashboard' && currentUser?.role !== 'proprietario') {
+                showToast('Acesso negado: Somente o proprietário pode ver o painel analítico.', 'lock', 'red');
+                return;
+            }
+
+            // Oculta todas
+            document.getElementById('view-pdv').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-estoque').classList.add('hidden');
+            document.getElementById('view-equipe').classList.add('hidden');
+            document.getElementById('view-credores').classList.add('hidden');
+            
+            // Reseta cores dos botões
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('text-gray-300', 'hover:bg-gray-800');
+            });
+
+            // Ativa selecionada
+            document.getElementById(`view-${tabId}`)?.classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).classList.remove('text-gray-300', 'hover:bg-gray-800');
+            document.getElementById(`nav-${tabId}`).classList.add('bg-primary', 'text-white');
+
+            // Atualiza Título
+            const titles = {
+                'pdv': 'Frente de Caixa (PDV)',
+                'dashboard': 'Gestão do Meu Negócio',
+                'estoque': 'Gestão de Estoque e Insumos',
+                'equipe': 'Equipe, Metas e Produtividade',
+                'credores': 'Credores e Clientes'
+            };
+            document.getElementById('page-title').innerText = titles[tabId] || 'GlobalPOS';
+
+            // Renderiza conteúdo específico da aba
+            if(tabId === 'dashboard') {
+                if(!window.chartInitialized) {
+                    window.chartInitialized = true;
+                }
+                loadBusinessData();
+                const certConfigured = localStorage.getItem('pos_cert_configured') === 'true';
+                if(certConfigured) {
+                    document.getElementById('cert-status').innerText = 'A1 Configurado Ativo';
+                    document.getElementById('cert-status').classList.replace('text-gray-500', 'text-green-600');
+                }
+            } else if (tabId === 'estoque') {
+                renderInventory();
+            } else if (tabId === 'equipe') {
+                renderTeam();
+            } else if (tabId === 'credores') {
+                renderCredores();
+            }
+            
+            if(tabId === 'dashboard') {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('sales-filter-date').value = today;
+                renderSalesHistory();
+            }
+        }
+
+        function saveBusinessData() {
+            const data = {
+                type: document.getElementById('biz-type').value,
+                size: document.getElementById('biz-size').value,
+                tax: document.getElementById('biz-tax').value
+            };
+            localStorage.setItem('pos_business_data', JSON.stringify(data));
+            showToast('Dados do negócio salvos com sucesso!', 'check', 'green');
+        }
+
+        function loadBusinessData() {
+            const saved = localStorage.getItem('pos_business_data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('biz-type').value = data.type;
+                document.getElementById('biz-size').value = data.size;
+                document.getElementById('biz-tax').value = data.tax;
+            }
+        }
+
+        function toggleConnection() {
+            isOffline = !isOffline;
+            const btn = document.getElementById('conn-status');
+            const text = document.getElementById('conn-text');
+            
+            if (isOffline) {
+                btn.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 text-sm font-medium border border-orange-200 transition-colors";
+                btn.innerHTML = `<i data-lucide="wifi-off" class="w-4 h-4"></i> <span id="conn-text">Modo Offline Local</span>`;
+                showToast('Conexão perdida. O PDV continuará funcionando localmente.', 'wifi-off', 'orange');
+            } else {
+                btn.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-sm font-medium border border-green-200 transition-colors";
+                btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> <span id="conn-text">Online e Sincronizado</span>`;
+                showToast('Conexão restabelecida. Sincronizando dados pendentes...', 'refresh-cw', 'green');
+            }
+            lucide.createIcons();
+        }
+
+        function showToast(msg, iconStr, color) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            
+            document.getElementById('toast-message').innerText = msg;
+            
+            // Colors
+            const colorMap = {
+                'green': 'text-green-400',
+                'blue': 'text-blue-400',
+                'orange': 'text-orange-400',
+                'red': 'text-red-400'
+            };
+            
+            icon.className = `w-5 h-5 ${colorMap[color] || 'text-white'}`;
+            icon.setAttribute('data-lucide', iconStr);
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // ------------------
+        // GRÁFICO (Chart.js)
+        // ------------------
+        function initChart() {
+            const ctx = document.getElementById('cashflowChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                    datasets: [
+                        {
+                            label: 'Entradas (Vendas)',
+                            data: [4500, 5200, 4800, 6100],
+                            backgroundColor: '#10B981', // Emerald
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Saídas (Credores/Contas)',
+                            data: [-2100, -1800, -3200, -1500],
+                            backgroundColor: '#EF4444', // Red
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f3f4f6' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ------------------
+        // FUNÇÕES AUXILIARES ADICIONAIS
+        // ------------------
+        function addNewProduct() {
+            const name = prompt('Nome do novo item:');
+            if(!name) return;
+            const typeStr = prompt('Tipo (service / product):', 'service');
+            const price = parseFloat(prompt('Preço de venda (R$):', '0'));
+            if(isNaN(price)) return;
+            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+            products.push({
+                id: newId, name, type: typeStr === 'product' ? 'product' : 'service',
+                price, img: 'box', color: 'bg-gray-100 text-gray-600',
+                stock: typeStr === 'product' ? 0 : null, bom: []
+            });
+            renderInventory();
+            renderProducts();
+            showToast(`${name} adicionado!`, 'plus', 'green');
+        }
+
+        function doCheckIn(memberId) {
+            const member = teamMembers.find(m => m.id === memberId);
+            if(!member) return;
+            const now = new Date();
+            member.status = 'online';
+            member.checkIn = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+            renderTeam();
+            showToast(`Check-in de ${member.name} registrado!`, 'clock', 'green');
+        }
+
+        function switchNfeTab(tab) {
+            const existingBtn = document.getElementById('nfe-tab-existing');
+            const newBtn = document.getElementById('nfe-tab-new');
+            const newForm = document.getElementById('nfe-new-client-form');
+            const searchSection = document.querySelector('#nfe-modal .space-y-4');
+            if(tab === 'new') {
+                newBtn.className = 'flex-1 bg-white shadow-sm py-1.5 rounded-md text-sm font-bold text-gray-800';
+                existingBtn.className = 'flex-1 text-gray-500 hover:text-gray-800 py-1.5 rounded-md text-sm font-medium';
+                newForm.classList.remove('hidden');
+                searchSection.classList.add('hidden');
+            } else {
+                existingBtn.className = 'flex-1 bg-white shadow-sm py-1.5 rounded-md text-sm font-bold text-gray-800';
+                newBtn.className = 'flex-1 text-gray-500 hover:text-gray-800 py-1.5 rounded-md text-sm font-medium';
+                newForm.classList.add('hidden');
+                searchSection.classList.remove('hidden');
+            }
+        }
+
+        function saveNewNfeClient() {
+            const name = document.getElementById('nfe-new-name').value;
+            const cnpj = document.getElementById('nfe-new-cnpj').value;
+            const city = document.getElementById('nfe-new-city').value;
+            if(!name || !cnpj) {
+                showToast('Preencha nome e CNPJ/CPF!', 'alert-circle', 'orange');
+                return;
+            }
+            const newClient = { cnpj, name, city };
+            mockClients.push(newClient);
+            selectedNfeClient = newClient;
+            const btn = document.getElementById('btn-generate-nfe');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('nfe-client-name').innerText = name;
+            document.getElementById('nfe-client-city').innerText = city;
+            document.getElementById('nfe-client-data').classList.remove('hidden');
+            switchNfeTab('existing');
+            showToast('Novo cliente cadastrado e selecionado!', 'user-plus', 'green');
+        }
+
+        // Inicialização
+        window.onload = () => {
+            renderProducts();
+            populateLoginSelect();
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "saas-pdv-global",
+  "version": "1.0.0",
+  "description": "SaaS de PDV Globalizado Multi-tenant e Offline-first",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx serve src -p 3000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
