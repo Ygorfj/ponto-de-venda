@@ -1,0 +1,52 @@
+query ListUserProducts @auth(level: USER) {
+  products(where: { userId: { eq_expr: "auth.uid" } }) {
+    id
+    name
+    price
+    stockQuantity
+    description
+    imageUrl
+  }
+}
+
+mutation CreateProduct($name: String!, $price: Float!, $stockQuantity: Int!, $description: String, $imageUrl: String) @auth(level: USER) {
+  product_insert(data: {
+    userId_expr: "auth.uid",
+    name: $name,
+    price: $price,
+    stockQuantity: $stockQuantity,
+    description: $description,
+    imageUrl: $imageUrl
+  })
+}
+
+mutation CreateCustomer($name: String!, $email: String, $phoneNumber: String, $address: String) @auth(level: USER) {
+  customer_insert(data: {
+    userId_expr: "auth.uid",
+    name: $name,
+    email: $email,
+    phoneNumber: $phoneNumber,
+    address: $address
+  })
+}
+
+query GetCustomerSales($customerId: UUID!) @auth(level: USER) {
+  customer(id: $customerId) {
+    name
+    email
+    sales_on_customer {
+      id
+      saleDate
+      totalAmount
+      notes
+      saleItems_on_sale {
+        quantity
+        unitPrice
+        subtotal
+        product {
+          name
+        }
+      }
+    }
+  }
+}

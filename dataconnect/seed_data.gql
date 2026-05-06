@@ -1,0 +1,81 @@
+mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This operation is for seeding data and should only be run by authenticated users.") {
+  user1: user_insert(data: {
+    id: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+    displayName: "Admin User",
+    email: "admin@example.com",
+    createdAt: "2023-01-01T00:00:00Z",
+    businessName: "Admin Corp",
+    phoneNumber: "+15551234567"
+  })
+  user2: user_insert(data: {
+    id: "b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6",
+    displayName: "Jane Doe",
+    email: "jane.doe@example.com",
+    createdAt: "2023-01-02T00:00:00Z",
+    businessName: "Jane's Emporium",
+    phoneNumber: "+15557654321"
+  })
+  customer1: customer_insert(data: {
+    id: "c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
+    userId: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+    name: "Acme Corp",
+    createdAt: "2023-01-03T00:00:00Z",
+    email: "contact@acmecorp.com",
+    phoneNumber: "+15551112222",
+    address: "123 Main St, Anytown, USA"
+  })
+  customer2: customer_insert(data: {
+    id: "d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6",
+    userId: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+    name: "Globex Corporation",
+    createdAt: "2023-01-04T00:00:00Z",
+    email: "info@globex.com",
+    phoneNumber: "+15553334444",
+    address: "456 Oak Ave, Somewhere, USA"
+  })
+  product1: product_insert(data: {
+    id: "e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6",
+    userId: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+    name: "Laptop Pro X",
+    price: 1200.00,
+    stockQuantity: 50,
+    createdAt: "2023-01-05T00:00:00Z",
+    description: "High performance laptop for professionals.",
+    imageUrl: "https://example.com/laptop.jpg"
+  })
+  product2: product_insert(data: {
+    id: "f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6",
+    userId: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+    name: "Wireless Mouse",
+    price: 25.00,
+    stockQuantity: 200,
+    createdAt: "2023-01-06T00:00:00Z",
+    description: "Ergonomic wireless mouse with long battery life.",
+    imageUrl: "https://example.com/mouse.jpg"
+  })
+  sale1: sale_insert(data: {
+    id: "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+    userId: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+    customerId: "c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
+    saleDate: "2023-01-07",
+    totalAmount: 1225.00,
+    createdAt: "2023-01-07T10:00:00Z",
+    notes: "Laptop Pro X and Wireless Mouse sold to Acme Corp"
+  })
+  saleItem1: saleItem_insert(data: {
+    id: "2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d",
+    saleId: "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+    productId: "e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6",
+    quantity: 1,
+    unitPrice: 1200.00,
+    subtotal: 1200.00
+  })
+  saleItem2: saleItem_insert(data: {
+    id: "3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d",
+    saleId: "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+    productId: "f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6",
+    quantity: 1,
+    unitPrice: 25.00,
+    subtotal: 25.00
+  })
+}
