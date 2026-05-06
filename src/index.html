@@ -41,41 +41,45 @@
 <body class="bg-gray-50 text-gray-800 h-screen overflow-hidden flex font-sans text-sm md:text-base">
 
     <!-- SIDEBAR (Navegação) -->
-    <aside class="w-20 lg:w-64 bg-tenant text-white flex flex-col transition-all duration-300">
+    <aside class="w-16 md:w-20 lg:w-64 bg-tenant text-white flex flex-col transition-all duration-300 z-50 shrink-0">
         <div class="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-gray-700">
             <i data-lucide="store" class="text-secondary w-8 h-8"></i>
             <span class="ml-3 font-bold text-xl hidden lg:block tracking-wide">MeuNegócio<span class="text-secondary text-xs align-top">PRO</span></span>
         </div>
         
         <nav class="flex-1 py-6 flex flex-col gap-2 px-3">
-            <button onclick="switchTab('pdv')" id="nav-pdv" class="flex items-center p-3 rounded-lg bg-primary text-white hover:bg-primary/80 transition-colors">
-                <i data-lucide="shopping-cart" class="w-6 h-6 mx-auto lg:mx-0"></i>
+            <button onclick="switchTab('pdv')" id="nav-pdv" class="flex justify-center md:justify-start items-center p-3 rounded-lg bg-primary text-white hover:bg-primary/80 transition-colors">
+                <i data-lucide="shopping-cart" class="w-6 h-6"></i>
                 <span class="ml-3 hidden lg:block font-medium">Frente de Caixa</span>
             </button>
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
-                <i data-lucide="building-2" class="w-6 h-6 mx-auto lg:mx-0"></i>
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex justify-center md:justify-start items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="building-2" class="w-6 h-6"></i>
                 <span class="ml-3 hidden lg:block font-medium">Meu Negócio</span>
             </button>
-            <button onclick="switchTab('estoque')" id="nav-estoque" class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
-                <i data-lucide="package" class="w-6 h-6 mx-auto lg:mx-0"></i>
+            <button onclick="switchTab('estoque')" id="nav-estoque" class="flex justify-center md:justify-start items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="package" class="w-6 h-6"></i>
                 <span class="ml-3 hidden lg:block font-medium">Estoque & Insumos</span>
             </button>
-            <button onclick="switchTab('equipe')" id="nav-equipe" class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
-                <i data-lucide="users" class="w-6 h-6 mx-auto lg:mx-0"></i>
+            <button onclick="switchTab('equipe')" id="nav-equipe" class="flex justify-center md:justify-start items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="users" class="w-6 h-6"></i>
                 <span class="ml-3 hidden lg:block font-medium">Equipe & Metas</span>
             </button>
-            <button onclick="switchTab('credores')" id="nav-credores" class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
-                <i data-lucide="contact" class="w-6 h-6 mx-auto lg:mx-0"></i>
-                <span class="ml-3 hidden lg:block font-medium">Credores & Clientes</span>
+            <button onclick="switchTab('financeiro')" id="nav-financeiro" class="flex justify-center md:justify-start items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+                <span class="ml-3 hidden lg:block font-medium">Financeiro</span>
+            </button>
+            <button onclick="switchTab('credores')" id="nav-credores" class="flex justify-center md:justify-start items-center p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                <i data-lucide="contact" class="w-6 h-6"></i>
+                <span class="ml-3 hidden lg:block font-medium">Clientes</span>
             </button>
         </nav>
 
-        <div class="p-4 border-t border-gray-700 flex flex-col gap-3 hidden lg:flex">
-            <div class="flex items-center justify-between text-xs text-gray-400">
+        <div class="p-2 lg:p-4 border-t border-gray-700 flex flex-col gap-3">
+            <div class="hidden lg:flex items-center justify-between text-xs text-gray-400">
                 <span>Moeda Base:</span>
                 <span class="font-bold text-white">BRL (R$)</span>
             </div>
-            <div id="user-profile-area" class="flex items-center gap-3">
+            <div id="user-profile-area" class="flex flex-col lg:flex-row items-center gap-2 lg:gap-3">
                 <!-- Preenchido via JS -->
             </div>
         </div>
@@ -101,10 +105,10 @@
         </header>
 
         <!-- VIEW: PDV -->
-        <section id="view-pdv" class="flex-1 flex overflow-hidden fade-in">
+        <section id="view-pdv" class="flex-1 flex flex-col lg:flex-row overflow-hidden fade-in">
             <!-- Grid de Produtos -->
-            <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
-                <div class="mb-6 flex gap-4">
+            <div class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50 flex flex-col">
+                <div class="mb-4 lg:mb-6 flex flex-col md:flex-row gap-3">
                     <div class="relative flex-1">
                         <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></i>
                         <input type="text" placeholder="Buscar produto ou ler código de barras..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none">
@@ -116,14 +120,14 @@
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="products-grid">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3" id="products-grid">
                     <!-- Produtos renderizados via JS -->
                 </div>
             </div>
 
-            <!-- Carrinho Lateral -->
-            <div class="w-80 lg:w-96 bg-white shadow-lg border-l border-gray-200 flex flex-col z-20">
-                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <!-- Carrinho Lateral (Na vertical em Mobile) -->
+            <div class="w-full lg:w-96 h-[45vh] lg:h-auto bg-white shadow-lg border-t lg:border-t-0 lg:border-l border-gray-200 flex flex-col z-20 shrink-0">
+                <div class="p-3 lg:p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <h3 class="font-bold flex items-center gap-2">
                         <i data-lucide="shopping-bag" class="w-5 h-5 text-primary"></i>
                         Comanda Atual
@@ -139,22 +143,22 @@
                 </div>
 
                 <!-- Resumo e Pagamento -->
-                <div class="p-4 border-t border-gray-200 bg-gray-50">
+                <div class="p-3 lg:p-4 border-t border-gray-200 bg-gray-50">
                     <div class="flex justify-between mb-2 text-sm">
-                        <span class="text-gray-500">Subtotal</span>
+                        <span class="text-gray-500">Valor dos Itens</span>
                         <span class="font-medium" id="cart-subtotal">R$ 0,00</span>
                     </div>
                     <div class="flex justify-between mb-4 text-sm">
-                        <span class="text-gray-500 flex items-center gap-1 cursor-help" title="Imposto calculado por região">
-                            Impostos (10%) <i data-lucide="info" class="w-3 h-3"></i>
+                        <span id="cart-tax-label" class="text-gray-400 flex items-center gap-1 cursor-help text-xs" title="Imposto aproximado (já embutido no preço)">
+                            Aprox. Tributos (0%) <i data-lucide="info" class="w-3 h-3"></i>
                         </span>
-                        <span class="font-medium" id="cart-tax">R$ 0,00</span>
+                        <span class="font-medium text-gray-400 text-xs" id="cart-tax">R$ 0,00</span>
                     </div>
-                    <div class="flex justify-between mb-6 text-lg font-bold">
+                    <div class="flex justify-between mb-3 lg:mb-6 text-base lg:text-lg font-bold">
                         <span>Total</span>
-                        <span class="text-primary text-2xl" id="cart-total">R$ 0,00</span>
+                        <span class="text-primary text-xl lg:text-2xl" id="cart-total">R$ 0,00</span>
                     </div>
-                    <button onclick="checkout()" id="btn-checkout" class="w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-200 transition-all transform active:scale-95 flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <button onclick="checkout()" id="btn-checkout" class="w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-3 lg:py-4 rounded-xl shadow-lg shadow-emerald-200 transition-all transform active:scale-95 flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         <i data-lucide="credit-card" class="w-5 h-5"></i>
                         Cobrar R$ 0,00
                     </button>
@@ -190,11 +194,18 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Regime Tributário</label>
-                        <select id="biz-tax" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm">
+                        <select id="biz-tax" onchange="updateDefaultTaxRate('biz')" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm">
                             <option value="simples">Simples Nacional</option>
                             <option value="lucro_presumido">Lucro Presumido</option>
                             <option value="lucro_real">Lucro Real</option>
                         </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Alíquota de Imposto (%)</label>
+                        <div class="relative">
+                            <input type="number" id="biz-tax-rate" step="0.01" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm font-bold" placeholder="0.00">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end">
@@ -387,7 +398,6 @@
                         </div>
                     </div>
                 </div>
-                </div>
             </div>
 
             <!-- Histórico de Vendas Detalhado -->
@@ -469,11 +479,17 @@
             <!-- Tabela de Insumos -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                    <h4 class="font-bold text-gray-700 flex items-center gap-2 text-sm uppercase">
-                        <i data-lucide="beaker" class="w-4 h-4 text-orange-500"></i>
-                        Insumos de Operação
-                    </h4>
-                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Estoque de Matéria-Prima</span>
+                    <div>
+                        <h4 class="font-bold text-gray-700 flex items-center gap-2 text-sm uppercase">
+                            <i data-lucide="beaker" class="w-4 h-4 text-orange-500"></i>
+                            Insumos de Operação
+                        </h4>
+                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Estoque de Matéria-Prima</span>
+                    </div>
+                    <button onclick="addNewInsumo()" class="bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1 transition-colors">
+                        <i data-lucide="plus" class="w-3 h-3"></i>
+                        Novo Insumo
+                    </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -536,12 +552,101 @@
             </div>
         </section>
 
+        <!-- VIEW: FINANCEIRO -->
+        <section id="view-financeiro" class="flex-1 overflow-y-auto p-6 hidden fade-in bg-gray-50">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">Financeiro & Contas a Receber</h3>
+                    <p class="text-gray-500 text-sm">Controle do fluxo de caixa e gestão de pagamentos futuros (fiado).</p>
+                </div>
+                <button onclick="openExportModal()" class="bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+                    <i data-lucide="calendar-check" class="w-4 h-4"></i>
+                    Fechamento de Lotes
+                </button>
+            </div>
+
+            <!-- Indicadores e Configurações lado a lado -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                
+                <!-- Indicadores Financeiros (2 colunas) -->
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-blue-500 flex flex-col justify-center">
+                        <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">A Receber (Pagamentos Futuros)</p>
+                        <h3 class="text-3xl font-black text-gray-800" id="fin-total-pending">R$ 0,00</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-emerald-500 flex flex-col justify-center">
+                        <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Recebido Hoje (Saldo PDV)</p>
+                        <h3 class="text-3xl font-black text-gray-800" id="fin-total-received">R$ 0,00</h3>
+                    </div>
+                </div>
+
+                <!-- Configuração de Recebimento (Maquininha) -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm">
+                        <i data-lucide="settings" class="w-4 h-4 text-gray-500"></i>
+                        Configuração de Recebimentos
+                    </h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Conta Destino</label>
+                            <select class="w-full px-3 py-1.5 rounded bg-gray-50 border border-gray-200 text-xs outline-none focus:border-primary">
+                                <option>Banco Inter (Conta Principal)</option>
+                                <option>Nubank (Reserva)</option>
+                                <option>Fluxo Central</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Prazo Cartão de Crédito</label>
+                            <select id="config-prazo-cartao" class="w-full px-3 py-1.5 rounded bg-gray-50 border border-gray-200 text-xs outline-none focus:border-primary">
+                                <option value="30">Padrão (30 dias)</option>
+                                <option value="14">Antecipado (14 dias)</option>
+                                <option value="0">Imediato (Antecipação)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Taxa da Maquininha (%)</label>
+                            <input type="number" id="config-taxa-maquininha" step="0.01" value="2.50" class="w-full px-3 py-1.5 rounded bg-gray-50 border border-gray-200 text-xs outline-none focus:border-primary font-bold text-gray-700">
+                        </div>
+                        <button class="w-full bg-gray-800 text-white text-xs font-bold py-2 rounded hover:bg-black transition-colors">
+                            Salvar Regras
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Fluxo de Recebimentos -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                    <h4 class="font-bold text-gray-700 flex items-center gap-2 text-sm uppercase">
+                        <i data-lucide="list" class="w-4 h-4 text-primary"></i>
+                        Fluxo de Recebimentos (Contas a Receber)
+                    </h4>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500">
+                                <th class="p-4 font-bold">Data Prevista</th>
+                                <th class="p-4 font-bold">Origem</th>
+                                <th class="p-4 font-bold">Descrição</th>
+                                <th class="p-4 font-bold">Valor Líquido</th>
+                                <th class="p-4 font-bold">Status Integração</th>
+                            </tr>
+                        </thead>
+                        <tbody id="finance-table-body" class="divide-y divide-gray-100 text-sm">
+                            <!-- Preenchido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <!-- VIEW: CREDORES E CLIENTES -->
         <section id="view-credores" class="flex-1 overflow-y-auto p-6 hidden fade-in bg-gray-50">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h3 class="text-2xl font-bold text-gray-800">Credores & Clientes</h3>
-                    <p class="text-gray-500 text-sm">Gerencie o cadastro de clientes para emissão de nota fiscal e contas a receber.</p>
+                    <h3 class="text-2xl font-bold text-gray-800">Gestão de Clientes</h3>
+                    <p class="text-gray-500 text-sm">Gerencie o cadastro de clientes para emissão de nota fiscal e controle de contas.</p>
                 </div>
                 <button onclick="addNewCredor()" class="bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
                     <i data-lucide="user-plus" class="w-4 h-4"></i>
@@ -553,7 +658,7 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500">
-                            <th class="p-4 font-bold">Cliente/Credor</th>
+                            <th class="p-4 font-bold">Cliente</th>
                             <th class="p-4 font-bold">CNPJ/CPF</th>
                             <th class="p-4 font-bold">Cidade</th>
                             <th class="p-4 font-bold text-right">Ações</th>
@@ -578,7 +683,7 @@
                 <!-- Meio de Pagamento -->
                 <div class="mb-6">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-3">Selecione o Meio de Pagamento</label>
-                    <div class="grid grid-cols-3 gap-2">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                         <button onclick="selectPaymentMethod('pix')" id="pay-pix" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-100 hover:border-primary transition-all group">
                             <i data-lucide="qr-code" class="w-6 h-6 text-gray-400 mb-1 payment-icon"></i>
                             <span class="text-[10px] font-bold text-gray-500 payment-label">PIX</span>
@@ -590,6 +695,10 @@
                         <button onclick="selectPaymentMethod('credito')" id="pay-credito" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-100 hover:border-primary transition-all group">
                             <i data-lucide="layers" class="w-6 h-6 text-gray-400 mb-1 payment-icon"></i>
                             <span class="text-[10px] font-bold text-gray-500 payment-label">CRÉDITO</span>
+                        </button>
+                        <button onclick="selectPaymentMethod('futuro')" id="pay-futuro" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-100 hover:border-orange-500 transition-all group">
+                            <i data-lucide="calendar-clock" class="w-6 h-6 text-gray-400 mb-1 payment-icon"></i>
+                            <span class="text-[10px] font-bold text-gray-500 payment-label text-center leading-tight">PAG. FUTURO<br>(Fiado)</span>
                         </button>
                     </div>
                 </div>
@@ -606,6 +715,12 @@
                         <option value="6">6x sem juros</option>
                         <option value="12">12x com juros operacionais</option>
                     </select>
+                </div>
+
+                <!-- Data para Pagamento Futuro -->
+                <div id="future-date-area" class="hidden mb-6 p-4 bg-orange-50 rounded-xl border border-orange-100 fade-in">
+                    <label class="block text-xs font-bold text-orange-600 uppercase mb-2">Previsão de Recebimento (Fiado)</label>
+                    <input type="date" id="checkout-future-date" class="w-full px-4 py-2 rounded-lg border border-orange-200 outline-none focus:ring-2 focus:ring-orange-500 font-bold text-gray-700">
                 </div>
                 
                 <div id="checkout-actions" class="space-y-3 opacity-30 pointer-events-none transition-opacity">
@@ -718,7 +833,7 @@
                                 <select id="pd-insumo-select" class="flex-1 text-xs px-2 py-2 border border-gray-200 rounded-lg outline-none">
                                     <!-- Options via JS -->
                                 </select>
-                                <input type="text" id="pd-insumo-qty" placeholder="ex: 100ml" class="w-20 text-xs px-2 py-2 border border-gray-200 rounded-lg outline-none">
+                                <input type="number" id="pd-insumo-qty" placeholder="ex: 100" class="w-20 text-xs px-2 py-2 border border-gray-200 rounded-lg outline-none" title="Quantidade consumida (na mesma unidade do insumo)">
                                 <button onclick="addInsumoToProduct()" aria-label="Adicionar insumo" class="bg-gray-800 text-white p-2 rounded-lg hover:bg-black transition-colors">
                                     <i data-lucide="plus" class="w-4 h-4"></i>
                                 </button>
@@ -729,7 +844,217 @@
 
                 <div class="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
                     <button onclick="closeProductDetails()" class="px-6 py-2 text-gray-500 font-bold text-sm hover:text-gray-700">Cancelar</button>
-                    <button onclick="saveProductDetails()" class="bg-primary text-white px-8 py-2 rounded-lg font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Salvar Alterações</button>
+                    <button onclick="saveProductDetails(); saveMockData();" class="bg-primary text-white px-8 py-2 rounded-lg font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MODAL INSUMO -->
+        <div id="insumo-modal" class="fixed inset-0 bg-black/50 z-[115] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-lg font-bold text-gray-800" id="insumo-modal-title">Novo Insumo</h3>
+                    <button onclick="closeInsumoModal()" aria-label="Fechar" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <input type="hidden" id="insumo-id">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Nome</label>
+                        <input type="text" id="insumo-name" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Custo Base (R$)</label>
+                        <input type="number" id="insumo-price" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Unidade de Medida</label>
+                        <select id="insumo-unit" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                            <option value="un">Unidade (un)</option>
+                            <option value="kg">Quilo (kg)</option>
+                            <option value="g">Grama (g)</option>
+                            <option value="L">Litro (L)</option>
+                            <option value="ml">Mililitro (ml)</option>
+                        </select>
+                    </div>
+                    <div id="insumo-stock-div">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Quantidade Inicial</label>
+                        <input type="number" id="insumo-stock" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                    <button onclick="saveInsumo()" class="bg-primary text-white px-6 py-2 rounded-lg font-bold w-full hover:bg-indigo-700">Salvar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL ADICIONAR ESTOQUE -->
+        <div id="add-stock-modal" class="fixed inset-0 bg-black/50 z-[120] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-lg font-bold text-gray-800">Adicionar Estoque</h3>
+                    <button onclick="closeAddStockModal()" aria-label="Fechar" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <input type="hidden" id="add-stock-id">
+                    <p class="text-sm font-bold text-gray-600" id="add-stock-name"></p>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Quantidade a Somar</label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="add-stock-qty" step="0.01" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary text-lg font-black text-green-600">
+                            <span id="add-stock-unit" class="text-xs font-bold text-gray-400 uppercase"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                    <button onclick="confirmAddStock()" class="bg-green-500 text-white px-6 py-2 rounded-lg font-bold w-full hover:bg-green-600">Confirmar Entrada</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL FECHAMENTO E EXPORTAÇÃO -->
+        <div id="export-modal" class="fixed inset-0 bg-black/50 z-[120] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-lg font-bold text-gray-800">Fechamento de Caixa</h3>
+                    <button onclick="closeExportModal()" aria-label="Fechar" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <p class="text-sm text-gray-600">Selecione o período das vendas que deseja consolidar e exportar para o seu Fluxo de Contas.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Data Inicial</label>
+                            <input type="date" id="export-start-date" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm font-bold text-gray-700">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Data Final</label>
+                            <input type="date" id="export-end-date" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm font-bold text-gray-700">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                    <button onclick="closeExportModal()" class="px-4 py-2 text-gray-500 font-bold text-sm hover:text-gray-700">Cancelar</button>
+                    <button onclick="exportarFinanceiro()" class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                        Exportar Lotes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL EQUIPE / MEMBRO -->
+        <div id="team-modal" class="fixed inset-0 bg-black/50 z-[120] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-lg font-bold text-gray-800" id="team-modal-title">Novo Membro da Equipe</h3>
+                    <button onclick="closeTeamModal()" aria-label="Fechar" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <input type="hidden" id="team-member-id">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Nome Completo</label>
+                        <input type="text" id="team-name" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Ex: Ana Souza">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Apelido Interno (Opcional)</label>
+                        <input type="text" id="team-nickname" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Como deseja chamá-lo?">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Cargo / Função</label>
+                        <select id="team-role" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                            <option value="Vendedor">Vendedor / Atendente</option>
+                            <option value="Caixa">Operador de Caixa</option>
+                            <option value="Gerente">Gerente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Senha de Acesso</label>
+                        <input type="password" id="team-password" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Defina a senha">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Meta de Vendas (R$)</label>
+                        <input type="number" id="team-goal" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="5000.00">
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                    <button onclick="closeTeamModal()" class="px-4 py-2 text-gray-500 font-bold text-sm hover:text-gray-700">Cancelar</button>
+                    <button onclick="saveTeamMember()" class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL PRODUTO / SERVIÇO -->
+        <div id="product-modal" class="fixed inset-0 bg-black/50 z-[120] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-lg font-bold text-gray-800" id="product-modal-title">Novo Produto/Serviço</h3>
+                    <button onclick="closeProductModal()" aria-label="Fechar" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <input type="hidden" id="product-id">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Nome do Item</label>
+                        <input type="text" id="product-name" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Tipo</label>
+                            <select id="product-type" onchange="toggleProductStockField()" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                                <option value="produto">Produto Físico</option>
+                                <option value="servico">Serviço</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Preço de Venda</label>
+                            <input type="number" id="product-price" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                    <div id="product-stock-div">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Quantidade Inicial</label>
+                        <input type="number" id="product-stock" step="1" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                    <button onclick="closeProductModal()" class="px-4 py-2 text-gray-500 font-bold text-sm hover:text-gray-700">Cancelar</button>
+                    <button onclick="saveProduct()" class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL CREDOR / CLIENTE -->
+        <div id="credor-modal" class="fixed inset-0 bg-black/50 z-[120] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-lg font-bold text-gray-800" id="credor-modal-title">Novo Cliente / Credor</h3>
+                    <button onclick="closeCredorModal()" aria-label="Fechar" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <input type="hidden" id="credor-id">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Nome ou Razão Social</label>
+                        <input type="text" id="credor-name" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">CNPJ / CPF</label>
+                        <input type="text" id="credor-cnpj" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Cidade - UF</label>
+                        <input type="text" id="credor-city" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Ex: São Paulo - SP">
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                    <button onclick="closeCredorModal()" class="px-4 py-2 text-gray-500 font-bold text-sm hover:text-gray-700">Cancelar</button>
+                    <button onclick="saveCredor()" class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        Salvar
+                    </button>
                 </div>
             </div>
         </div>
@@ -754,7 +1079,9 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Senha</label>
-                            <input type="password" id="login-password" placeholder="Digite sua senha" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary outline-none">
+                            <input type="password" id="login-password" placeholder="Digite sua senha" 
+                                   onkeyup="if(event.key === 'Enter') handleLogin()"
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary outline-none">
                         </div>
                         <button onclick="handleLogin()" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2">
                             Entrar no Sistema
@@ -766,6 +1093,66 @@
                     </p>
                 </div>
             </div>
+        </div>
+
+        <!-- TELA DE SETUP INICIAL (Overlay) -->
+        <div id="setup-screen" class="fixed inset-0 bg-tenant z-[105] flex items-center justify-center p-4 hidden">
+            <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden fade-in p-8">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="building-2" class="w-8 h-8 text-primary"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Configuração Inicial</h2>
+                    <p class="text-gray-500 text-sm mt-1">Preencha os dados obrigatórios do seu negócio para começar</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nome da Empresa / Fantasia</label>
+                        <input type="text" id="setup-biz-name" placeholder="Ex: Barbearia do João" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tipo de Negócio</label>
+                        <select id="setup-biz-type" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary">
+                            <option value="servico">Prestação de Serviços</option>
+                            <option value="comercio">Comércio Varejista</option>
+                            <option value="misto">Misto (Serviço e Comércio)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Porte da Empresa</label>
+                        <select id="setup-biz-size" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary">
+                            <option value="mei">MEI (Microempreendedor)</option>
+                            <option value="me">ME (Microempresa)</option>
+                            <option value="epp">EPP (Pequeno Porte)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Regime Tributário</label>
+                        <select id="setup-biz-tax" onchange="updateDefaultTaxRate('setup')" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary">
+                            <option value="simples">Simples Nacional</option>
+                            <option value="lucro_presumido">Lucro Presumido</option>
+                            <option value="lucro_real">Lucro Real</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Alíquota de Imposto (%)</label>
+                        <div class="relative">
+                            <input type="number" id="setup-biz-tax-rate" step="0.01" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary font-bold" placeholder="6.00">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
+                        </div>
+                    </div>
+                    <button onclick="finishSetup()" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg mt-4 flex justify-center items-center gap-2">
+                        <i data-lucide="check" class="w-5 h-5"></i>
+                        Salvar e Acessar Sistema
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- TOAST ALERTS -->
+        <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 z-[200]">
+            <i id="toast-icon" data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+            <span id="toast-message" class="font-medium text-sm">Operação realizada com sucesso!</span>
         </div>
 
     </main>
@@ -780,7 +1167,7 @@
         let isOffline = false;
         let cart = [];
         let currentUser = null;
-        const TAX_RATE = 0.10; 
+        let currentBizConfig = { size: 'mei', tax: 'simples', taxRate: 0 }; 
 
         function sanitizeInput(str) {
             if (!str) return str;
@@ -809,9 +1196,7 @@
         }
 
         const teamMembers = [
-            { id: 1, name: 'Ana Costa', nickname: 'Aninha', role: 'Gerente', password: '123', avatar: 'https://ui-avatars.com/api/?name=Ana+Costa&background=10B981&color=fff', status: 'online', checkIn: '08:00', points: 450, goal: 500 },
-            { id: 2, name: 'João Silva', nickname: 'Boss', role: 'Proprietário', password: 'admin', avatar: 'https://ui-avatars.com/api/?name=Joao+Silva&background=4F46E5&color=fff', status: 'online', checkIn: '09:15', points: 320, goal: 400 },
-            { id: 3, name: 'Maria Souza', nickname: 'Ligeirinha', role: 'Operadora', password: '123', avatar: 'https://ui-avatars.com/api/?name=Maria+Souza&background=F59E0B&color=fff', status: 'offline', checkIn: null, points: 120, goal: 300 }
+            { id: 1, name: 'João Silva', nickname: 'Boss', role: 'Proprietário', password: 'admin', avatar: 'https://ui-avatars.com/api/?name=Joao+Silva&background=4F46E5&color=fff', status: 'online', checkIn: '09:15', points: 0, goal: 5000.00 }
         ];
 
         function populateLoginSelect() {
@@ -827,11 +1212,13 @@
             const user = teamMembers.find(m => m.id === userId);
             
             if (user && user.password === pass) {
-                currentUser = { ...user, role: user.role === 'Proprietário' ? 'proprietario' : 'funcionario' };
+                let userRole = 'funcionario';
+                if (user.role === 'Proprietário') userRole = 'proprietario';
+                else if (user.role === 'Gerente') userRole = 'gerente';
                 
-                document.getElementById('login-screen').classList.add('hidden');
+                currentUser = { ...user, role: userRole };
+                
                 document.getElementById('login-password').value = ''; // Limpa senha
-                
                 updateUserProfileUI();
                 
                 const dashboardBtn = document.getElementById('nav-dashboard');
@@ -845,8 +1232,17 @@
                     addMemberBtn?.classList.remove('hidden');
                 }
 
-                showToast(`Bem-vindo, ${currentUser.name}!`, 'user', 'green');
-                switchTab('pdv');
+                // Verifica se é o primeiro login (sem config de negócio)
+                const bizData = localStorage.getItem('pos_business_data');
+                if (!bizData && currentUser.role === 'proprietario') {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('setup-screen').classList.remove('hidden');
+                    lucide.createIcons();
+                } else {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    showToast(`Bem-vindo, ${currentUser.name}!`, 'user', 'green');
+                    switchTab('pdv');
+                }
             } else {
                 showToast('Senha incorreta!', 'lock', 'red');
             }
@@ -861,35 +1257,32 @@
         function updateUserProfileUI() {
             const profileArea = document.getElementById('user-profile-area');
             profileArea.innerHTML = `
-                <img src="${currentUser.avatar}" alt="User" class="w-10 h-10 rounded-full">
-                <div class="flex-1">
-                    <p class="font-medium text-sm text-white">${currentUser.name}</p>
-                    <p class="text-xs text-gray-400 uppercase font-bold tracking-tighter">${currentUser.role === 'proprietario' ? 'Dono do Negócio' : 'Operador'}</p>
+                <img src="${currentUser.avatar}" alt="User" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full border border-gray-600">
+                <div class="flex-1 hidden lg:block overflow-hidden">
+                    <p class="font-medium text-xs lg:text-sm text-white truncate">${currentUser.name}</p>
+                    <p class="text-[9px] lg:text-xs text-gray-400 uppercase font-bold tracking-tighter">
+                        ${currentUser.role === 'proprietario' ? 'Dono' : (currentUser.role === 'gerente' ? 'Gerente' : 'Operador')}
+                    </p>
                 </div>
-                <button onclick="logout()" aria-label="Sair" class="text-gray-500 hover:text-red-400" title="Sair">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                <button onclick="logout()" aria-label="Sair" class="text-gray-500 hover:text-red-400 p-1" title="Sair">
+                    <i data-lucide="log-out" class="w-4 h-4 lg:w-5 lg:h-5"></i>
                 </button>
             `;
+            
+            // Controle de visibilidade do menu lateral
+            const isOwnerOrManager = currentUser.role === 'proprietario' || currentUser.role === 'gerente';
+            document.getElementById('nav-dashboard').style.display = isOwnerOrManager ? 'flex' : 'none';
+            document.getElementById('nav-equipe').style.display = isOwnerOrManager ? 'flex' : 'none';
+            document.getElementById('nav-financeiro').style.display = isOwnerOrManager ? 'flex' : 'none';
+
             lucide.createIcons();
         }
 
-        // Mock de Produtos Físicos e Serviços (Ficha Técnica implícita)
-        const products = [
-            { id: 1, name: 'Corte de Cabelo', type: 'service', price: 45.00, img: 'scissors', color: 'bg-purple-100 text-purple-600', stock: null, bom: [] },
-            { id: 2, name: 'Pintura (Serviço)', type: 'service', price: 120.00, img: 'paint-bucket', color: 'bg-pink-100 text-pink-600', stock: null, bom: [{name:'Tinta Capilar (Tubo)', qty:'1 un'}] },
-            { id: 3, name: 'Pomada Modeladora', type: 'product', price: 35.00, img: 'box', color: 'bg-blue-100 text-blue-600', stock: 12, bom: [] },
-            { id: 4, name: 'Shampoo Premium', type: 'product', price: 55.00, img: 'droplet', color: 'bg-cyan-100 text-cyan-600', stock: 2, bom: [] },
-            { id: 5, name: "Tinta L'Oréal", type: 'product', price: 40.00, img: 'palette', color: 'bg-orange-100 text-orange-600', stock: 5, bom: [] },
-            { id: 6, name: 'Barba Terapia', type: 'service', price: 30.00, img: 'smile', color: 'bg-indigo-100 text-indigo-600', stock: null, bom: [{name:'Shampoo Galão (5L)', qty:'50ml'}] }
-        ];
+        // Mock de Produtos Físicos e Serviços (vazio)
+        const products = [];
 
-        // Mock de Insumos
-        const insumos = [
-            { id: 101, name: 'Tinta Capilar (Tubo)', price: 15.50, stock: 45, unit: 'un' },
-            { id: 102, name: 'Shampoo Galão (5L)', price: 85.00, stock: 8, unit: 'gl' },
-            { id: 103, name: 'Lâminas de Barbear', price: 0.80, stock: 120, unit: 'un' },
-            { id: 104, name: 'Capa Descartável', price: 2.10, stock: 200, unit: 'un' }
-        ];
+        // Mock de Insumos (vazio)
+        const insumos = [];
 
         // ------------------
         // RENDERIZAÇÃO DE EQUIPE
@@ -900,6 +1293,7 @@
             const teamContainer = document.getElementById('team-list');
             const rankingContainer = document.getElementById('ranking-list');
             if(!teamContainer || !rankingContainer) return;
+            if(!currentUser) return; // Guarda contra null antes do login
             
             teamContainer.innerHTML = '';
             rankingContainer.innerHTML = '';
@@ -907,9 +1301,9 @@
             // Renderiza Lista de Check-in
             teamMembers.forEach(m => {
                 const isOnline = m.status === 'online';
-                const isOwner = currentUser.role === 'proprietario';
-                const canEdit = isOwner && m.role !== 'Proprietário';
-                const displayName = isOwner && m.nickname ? `${m.name} <span class="text-xs text-primary font-normal italic">"${m.nickname}"</span>` : m.name;
+                const isOwnerOrManager = currentUser.role === 'proprietario' || currentUser.role === 'gerente';
+                const canEdit = isOwnerOrManager && m.role !== 'Proprietário';
+                const displayName = isOwnerOrManager && m.nickname ? `${m.name} <span class="text-xs text-primary font-normal italic">"${m.nickname}"</span>` : m.name;
 
                 teamContainer.innerHTML += `
                     <div class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 group">
@@ -956,12 +1350,12 @@
                         <div class="flex-1">
                             <div class="flex justify-between items-end mb-1">
                                 <p class="font-bold text-sm text-gray-800">${m.name}</p>
-                                <span class="text-xs font-bold text-primary">${m.points} pts</span>
+                                <span class="text-xs font-bold text-primary">R$ ${m.points.toFixed(2).replace('.', ',')}</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-1.5">
                                 <div class="bg-primary h-1.5 rounded-full" style="width: ${progress}%"></div>
                             </div>
-                            <p class="text-[10px] text-gray-400 mt-1 text-right">Meta: ${m.goal} pts</p>
+                            <p class="text-[10px] text-gray-400 mt-1 text-right">Meta: R$ ${m.goal.toFixed(2).replace('.', ',')}</p>
                         </div>
                     </div>
                 `;
@@ -970,55 +1364,92 @@
             lucide.createIcons();
         }
 
+        function closeTeamModal() {
+            document.getElementById('team-modal').classList.add('hidden');
+        }
+
         function addTeamMember() {
-            if(currentUser.role !== 'proprietario') return;
+            const isOwnerOrManager = currentUser.role === 'proprietario' || currentUser.role === 'gerente';
+            if(!isOwnerOrManager) return;
             
-            const name = sanitizeInput(prompt("Nome do novo membro:"));
-            if(!name) return;
+            document.getElementById('team-modal-title').innerText = "Novo Membro da Equipe";
+            document.getElementById('team-member-id').value = '';
+            document.getElementById('team-name').value = '';
+            document.getElementById('team-nickname').value = '';
+            document.getElementById('team-role').value = 'Vendedor';
+            document.getElementById('team-password').value = '';
+            document.getElementById('team-goal').value = '5000.00';
             
-            const role = sanitizeInput(prompt("Cargo (Ex: Vendedor, Caixa, Gerente):", "Vendedor"));
-            if(!role) return;
-
-            const pass = prompt("Defina uma senha inicial:", "123");
-            const nick = sanitizeInput(prompt("Apelido (visível apenas para você):", ""));
-
-            const newId = teamMembers.length > 0 ? Math.max(...teamMembers.map(m => m.id)) + 1 : 1;
-            
-            teamMembers.push({
-                id: newId,
-                name: name,
-                nickname: nick,
-                role: role,
-                password: pass || '123',
-                avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`,
-                status: 'offline',
-                checkIn: null,
-                points: 0,
-                goal: 300
-            });
-
-            renderTeam();
-            populateLoginSelect();
-            showToast(`${name} adicionado à equipe!`, 'user-plus', 'green');
+            document.getElementById('team-modal').classList.remove('hidden');
         }
 
         function editTeamMember(id) {
-            if(currentUser.role !== 'proprietario') return;
+            const isOwnerOrManager = currentUser.role === 'proprietario' || currentUser.role === 'gerente';
+            if(!isOwnerOrManager) return;
             const member = teamMembers.find(m => m.id === id);
             if(!member) return;
 
-            const newPass = prompt(`Alterar senha para ${unescapeHTML(member.name)}:`, member.password);
-            const newNick = sanitizeInput(prompt(`Alterar apelido secreto para ${unescapeHTML(member.name)}:`, unescapeHTML(member.nickname) || ""));
-
-            if(newPass !== null) member.password = newPass;
-            if(newNick !== null) member.nickname = newNick;
-
+            document.getElementById('team-modal-title').innerText = "Editar Membro";
+            document.getElementById('team-member-id').value = member.id;
+            document.getElementById('team-name').value = unescapeHTML(member.name);
+            document.getElementById('team-nickname').value = unescapeHTML(member.nickname || '');
+            document.getElementById('team-role').value = member.role;
+            document.getElementById('team-password').value = member.password;
+            document.getElementById('team-goal').value = member.goal.toFixed(2);
+            
+            document.getElementById('team-modal').classList.remove('hidden');
+        }
+        
+        function saveTeamMember() {
+            const idVal = document.getElementById('team-member-id').value;
+            const name = sanitizeInput(document.getElementById('team-name').value);
+            if(!name) { showToast('Nome é obrigatório', 'alert-circle', 'red'); return; }
+            
+            const nickname = sanitizeInput(document.getElementById('team-nickname').value);
+            const role = document.getElementById('team-role').value;
+            const password = document.getElementById('team-password').value || '123';
+            const goalStr = document.getElementById('team-goal').value;
+            const goal = parseFloat(goalStr) || 0;
+            
+            if(idVal) {
+                // Editar
+                const id = parseInt(idVal);
+                const member = teamMembers.find(m => m.id === id);
+                if(member) {
+                    member.name = name;
+                    member.nickname = nickname;
+                    member.role = role;
+                    member.password = password;
+                    member.goal = goal;
+                    showToast('Dados do membro atualizados!', 'edit-3', 'blue');
+                }
+            } else {
+                // Novo
+                const newId = teamMembers.length > 0 ? Math.max(...teamMembers.map(m => m.id)) + 1 : 1;
+                teamMembers.push({
+                    id: newId,
+                    name: name,
+                    nickname: nickname,
+                    role: role,
+                    password: password,
+                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`,
+                    status: 'offline',
+                    checkIn: null,
+                    points: 0,
+                    goal: goal
+                });
+                showToast(`${name} adicionado à equipe!`, 'user-plus', 'green');
+            }
+            
             renderTeam();
-            showToast('Dados do membro atualizados!', 'edit-3', 'blue');
+            populateLoginSelect();
+            saveMockData();
+            closeTeamModal();
         }
 
         function removeTeamMember(id) {
-            if(currentUser.role !== 'proprietario') return;
+            const isOwnerOrManager = currentUser.role === 'proprietario' || currentUser.role === 'gerente';
+            if(!isOwnerOrManager) return;
             
             const member = teamMembers.find(m => m.id === id);
             if(!member) return;
@@ -1027,6 +1458,8 @@
                 const index = teamMembers.indexOf(member);
                 teamMembers.splice(index, 1);
                 renderTeam();
+                populateLoginSelect();
+                saveMockData();
                 showToast('Membro removido.', 'trash-2', 'orange');
             }
         }
@@ -1035,6 +1468,161 @@
         // RENDERIZAÇÃO DO ESTOQUE
         // ------------------
         let currentEditingProductId = null;
+
+        function toggleProductStockField() {
+            const isService = document.getElementById('product-type').value === 'servico';
+            if(isService) {
+                document.getElementById('product-stock-div').classList.add('hidden');
+                document.getElementById('product-stock').value = '';
+            } else {
+                document.getElementById('product-stock-div').classList.remove('hidden');
+            }
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        function addNewProduct() {
+            document.getElementById('product-modal-title').innerText = "Novo Produto / Serviço";
+            document.getElementById('product-id').value = '';
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-type').value = 'produto';
+            document.getElementById('product-price').value = '';
+            document.getElementById('product-stock').value = '';
+            toggleProductStockField();
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function saveProduct() {
+            const idVal = document.getElementById('product-id').value;
+            const name = sanitizeInput(document.getElementById('product-name').value);
+            if(!name) { showToast('Nome é obrigatório!', 'alert-circle', 'red'); return; }
+            
+            const type = document.getElementById('product-type').value;
+            const price = parseFloat(document.getElementById('product-price').value) || 0;
+            const isService = type === 'servico';
+            
+            let stock = null;
+            if(!isService) {
+                stock = parseInt(document.getElementById('product-stock').value) || 0;
+            }
+            
+            if(idVal) {
+                // If editing is implemented later
+                // const id = parseInt(idVal);
+            } else {
+                // Novo produto
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.push({
+                    id: newId,
+                    name: name,
+                    type: isService ? 'service' : 'product',
+                    price: price,
+                    img: isService ? 'briefcase' : 'box',
+                    color: isService ? 'bg-indigo-100 text-indigo-600' : 'bg-blue-100 text-blue-600',
+                    stock: stock,
+                    bom: []
+                });
+                showToast(`${name} cadastrado com sucesso!`, 'check-circle', 'green');
+            }
+            
+            renderInventory();
+            renderProducts();
+            saveMockData();
+            closeProductModal();
+        }
+
+        function addNewInsumo() {
+            document.getElementById('insumo-modal-title').innerText = 'Novo Insumo';
+            document.getElementById('insumo-id').value = '';
+            document.getElementById('insumo-name').value = '';
+            document.getElementById('insumo-price').value = '';
+            document.getElementById('insumo-unit').value = 'un';
+            document.getElementById('insumo-stock').value = '';
+            document.getElementById('insumo-stock-div').classList.remove('hidden');
+            document.getElementById('insumo-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function editInsumo(id) {
+            const insumo = insumos.find(i => i.id === id);
+            if(!insumo) return;
+            document.getElementById('insumo-modal-title').innerText = 'Editar Insumo';
+            document.getElementById('insumo-id').value = insumo.id;
+            document.getElementById('insumo-name').value = insumo.name;
+            document.getElementById('insumo-price').value = insumo.price;
+            document.getElementById('insumo-unit').value = insumo.unit;
+            document.getElementById('insumo-stock').value = insumo.stock;
+            document.getElementById('insumo-stock-div').classList.add('hidden'); // Edit stock via "Add Stock"
+            document.getElementById('insumo-modal').classList.remove('hidden');
+        }
+
+        function closeInsumoModal() {
+            document.getElementById('insumo-modal').classList.add('hidden');
+        }
+
+        function saveInsumo() {
+            const id = document.getElementById('insumo-id').value;
+            const name = sanitizeInput(document.getElementById('insumo-name').value);
+            const price = parseFloat(document.getElementById('insumo-price').value);
+            const unit = document.getElementById('insumo-unit').value;
+            const stock = parseFloat(document.getElementById('insumo-stock').value) || 0;
+
+            if(!name || isNaN(price)) {
+                showToast('Preencha nome e preço corretamente.', 'alert-circle', 'orange');
+                return;
+            }
+
+            if(id) {
+                const insumo = insumos.find(i => i.id == id);
+                if(insumo) {
+                    insumo.name = name;
+                    insumo.price = price;
+                    insumo.unit = unit;
+                    showToast('Insumo atualizado!', 'check-circle', 'blue');
+                }
+            } else {
+                const newId = insumos.length > 0 ? Math.max(...insumos.map(i => i.id)) + 1 : 101;
+                insumos.push({ id: newId, name, price, stock, unit });
+                showToast('Insumo cadastrado com sucesso!', 'check-circle', 'green');
+            }
+
+            closeInsumoModal();
+            renderInventory();
+            saveMockData();
+        }
+
+        function openAddStockModal(id) {
+            const insumo = insumos.find(i => i.id === id);
+            if(!insumo) return;
+            document.getElementById('add-stock-id').value = id;
+            document.getElementById('add-stock-name').innerText = insumo.name;
+            document.getElementById('add-stock-qty').value = '';
+            document.getElementById('add-stock-unit').innerText = insumo.unit;
+            document.getElementById('add-stock-modal').classList.remove('hidden');
+        }
+
+        function closeAddStockModal() {
+            document.getElementById('add-stock-modal').classList.add('hidden');
+        }
+
+        function confirmAddStock() {
+            const id = document.getElementById('add-stock-id').value;
+            const qty = parseFloat(document.getElementById('add-stock-qty').value);
+            if(isNaN(qty) || qty <= 0) {
+                showToast('Informe uma quantidade válida!', 'alert-circle', 'orange');
+                return;
+            }
+            const insumo = insumos.find(i => i.id == id);
+            if(insumo) {
+                insumo.stock += qty;
+                showToast(`Estoque de ${insumo.name} atualizado!`, 'package-plus', 'green');
+                renderInventory();
+                saveMockData();
+                closeAddStockModal();
+            }
+        }
 
         function renderInventory() {
             const productsGrid = document.getElementById('inventory-products-grid');
@@ -1102,7 +1690,8 @@
                             </td>
                             <td class="p-4 text-[10px] text-gray-400 uppercase font-black tracking-widest">${i.unit}</td>
                             <td class="p-4 text-right">
-                                <button aria-label="Editar" class="text-gray-300 hover:text-primary p-2"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                <button aria-label="Adicionar Estoque" onclick="openAddStockModal(${i.id})" class="text-gray-300 hover:text-green-500 p-2"><i data-lucide="plus-square" class="w-4 h-4"></i></button>
+                                <button aria-label="Editar" onclick="editInsumo(${i.id})" class="text-gray-300 hover:text-primary p-2"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
                             </td>
                         </tr>
                     `;
@@ -1158,7 +1747,7 @@
                 <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-200 group">
                     <div class="flex flex-col">
                         <span class="text-xs font-bold text-gray-800">${item.name}</span>
-                        <span class="text-[10px] text-primary font-bold">Consumo: ${item.qty}</span>
+                        <span class="text-[10px] text-primary font-bold">Consumo: ${item.qty} ${item.unit}</span>
                     </div>
                     <button onclick="removeInsumoFromProduct(${idx})" aria-label="Remover insumo" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -1172,18 +1761,27 @@
             const select = document.getElementById('pd-insumo-select');
             const qtyInput = document.getElementById('pd-insumo-qty');
             const insumoId = parseInt(select.value);
-            const qty = qtyInput.value;
+            const qty = parseFloat(qtyInput.value);
 
-            if(!insumoId || !qty) {
-                showToast('Selecione um insumo e a quantidade!', 'alert-circle', 'orange');
+            if(!insumoId || isNaN(qty) || qty <= 0) {
+                showToast('Selecione um insumo e informe a quantidade numérica!', 'alert-circle', 'orange');
                 return;
             }
 
             const insumo = insumos.find(i => i.id === insumoId);
             const product = products.find(p => p.id === currentEditingProductId);
+            if(!insumo || !product) return;
+
+            // Verifica duplicidade
+            const jaExiste = product.bom.some(b => b.insumoId === insumo.id);
+            if(jaExiste) {
+                showToast('Este insumo já está na ficha técnica!', 'alert-circle', 'orange');
+                return;
+            }
             
-            product.bom.push({ name: insumo.name, qty: qty });
+            product.bom.push({ insumoId: insumo.id, name: insumo.name, qty: qty, unit: insumo.unit });
             renderBOMList(product);
+            saveMockData();
             
             select.value = '';
             qtyInput.value = '';
@@ -1192,8 +1790,10 @@
 
         function removeInsumoFromProduct(idx) {
             const product = products.find(p => p.id === currentEditingProductId);
+            if(!product) return;
             product.bom.splice(idx, 1);
             renderBOMList(product);
+            saveMockData();
         }
 
         function closeProductDetails() {
@@ -1203,9 +1803,16 @@
 
         function saveProductDetails() {
             const product = products.find(p => p.id === currentEditingProductId);
-            product.price = parseFloat(document.getElementById('pd-price').value);
+            if(!product) return;
+            const newPrice = parseFloat(document.getElementById('pd-price').value);
+            if(isNaN(newPrice) || newPrice < 0) {
+                showToast('Informe um preço válido!', 'alert-circle', 'orange');
+                return;
+            }
+            product.price = newPrice;
             if(product.type === 'product') {
-                product.stock = parseInt(document.getElementById('pd-stock').value);
+                const newStock = parseInt(document.getElementById('pd-stock').value);
+                if(!isNaN(newStock)) product.stock = newStock;
             }
             
             renderInventory();
@@ -1313,8 +1920,28 @@
                 `;
             });
 
-            const tax = subtotal * TAX_RATE;
-            const total = subtotal + tax;
+            let hasProduct = false;
+            let hasService = false;
+            cart.forEach(item => {
+                if (item.type === 'servico') hasService = true;
+                else hasProduct = true;
+            });
+            let taxTypes = [];
+            if (hasProduct) taxTypes.push('ICMS');
+            if (hasService) taxTypes.push('ISS');
+            let taxLabel = taxTypes.length > 0 ? taxTypes.join('/') : 'Tributos';
+            
+            let displayRate = currentBizConfig.taxRate;
+            let taxText = `Aprox. Tributos (${taxLabel} - ${displayRate.toFixed(2)}%)`;
+            if (currentBizConfig.size === 'mei') {
+                 taxText = `Aprox. Tributos (MEI - ${displayRate.toFixed(2)}%)`;
+            }
+
+            document.getElementById('cart-tax-label').innerHTML = `${taxText} <i data-lucide="info" class="w-3 h-3"></i>`;
+
+            // No Brasil, o imposto já está embutido no preço de venda para o consumidor final
+            const tax = subtotal * (displayRate / 100);
+            const total = subtotal; 
 
             subtotalEl.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
             taxEl.innerText = `R$ ${tax.toFixed(2).replace('.', ',')}`;
@@ -1333,19 +1960,15 @@
         let selectedPaymentMethod = null;
         let selectedInstallments = 1;
 
-        const salesHistory = [
-            // Mock de vendas passadas para teste
-            { date: '2026-05-03', time: '14:20', employee: 'Ana Costa', client: 'Empresa Alpha Tech', items: [{name: 'Corte Degradê', qty: 1, total: 45}], total: 45, nfe: true, payment: 'Crédito (1x)' },
-            { date: '2026-05-03', time: '16:05', employee: 'João Silva', client: 'Consumidor Final', items: [{name: 'Barba Terapia', qty: 2, total: 70}], total: 70, nfe: false, payment: 'Pix' }
-        ];
+        const salesHistory = [];
 
         function checkout() {
             if(cart.length === 0) return;
             
             // Calcula total novamente para o modal
             let subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
-            const tax = subtotal * TAX_RATE;
-            const total = subtotal + tax;
+            const tax = subtotal * (currentBizConfig.taxRate / 100);
+            const total = subtotal; // Imposto embutido
             document.getElementById('checkout-total-display').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
 
             // Reset do estado do modal
@@ -1355,7 +1978,7 @@
             document.getElementById('checkout-actions').classList.add('opacity-30', 'pointer-events-none');
             
             // Reset visual dos botões de pagamento
-            ['pix', 'debito', 'credito'].forEach(m => {
+            ['pix', 'debito', 'credito', 'futuro'].forEach(m => {
                 const btn = document.getElementById(`pay-${m}`);
                 const icon = btn.querySelector('.payment-icon');
                 const label = btn.querySelector('.payment-label');
@@ -1378,7 +2001,7 @@
             selectedPaymentMethod = method;
             
             // Toggle visual
-            ['pix', 'debito', 'credito'].forEach(m => {
+            ['pix', 'debito', 'credito', 'futuro'].forEach(m => {
                 const btn = document.getElementById(`pay-${m}`);
                 const icon = btn.querySelector('.payment-icon');
                 const label = btn.querySelector('.payment-label');
@@ -1406,12 +2029,18 @@
                 }
             });
 
-            // Gerencia área de parcelas
+            // Gerencia áreas extras (Parcelas ou Data Fiado)
             const instArea = document.getElementById('installment-area');
-            if(method === 'credito') {
-                instArea.classList.remove('hidden');
-            } else {
-                instArea.classList.add('hidden');
+            const futureDateArea = document.getElementById('future-date-area');
+
+            instArea.classList.toggle('hidden', method !== 'credito');
+            if(futureDateArea) {
+                futureDateArea.classList.toggle('hidden', method !== 'futuro');
+                if(method === 'futuro') {
+                    const d = new Date();
+                    d.setDate(d.getDate() + 30);
+                    document.getElementById('checkout-future-date').value = d.toISOString().split('T')[0];
+                }
             }
 
             // Habilita ações
@@ -1427,12 +2056,61 @@
             if(cart.length === 0) return;
 
             const now = new Date();
-            const dateStr = now.toISOString().split('T')[0];
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const dateStr = `${yyyy}-${mm}-${dd}`;
             const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
             const installments = document.getElementById('checkout-installments').value;
+            const futureDate = document.getElementById('checkout-future-date').value;
             const paymentText = selectedPaymentMethod === 'credito' ? `Crédito (${installments}x)` : 
-                               (selectedPaymentMethod === 'pix' ? 'Pix' : 'Débito');
+                               (selectedPaymentMethod === 'pix' ? 'Pix' : 
+                               (selectedPaymentMethod === 'futuro' ? 'Fiado' : 'Débito'));
+
+            // Dedução de Estoque (BOM e Produto Físico) e Conversão de Unidades
+            cart.forEach(item => {
+                // Dedução direta de Produto Físico (Corrigido para 'produto')
+                if ((item.type === 'produto' || item.type === 'product') && typeof item.stock === 'number') {
+                    const prodRef = products.find(p => p.id === item.id);
+                    if (prodRef) {
+                        prodRef.stock -= item.qty;
+                        if (prodRef.stock < 0) prodRef.stock = 0;
+                    }
+                }
+                
+                // Dedução da Ficha Técnica (BOM)
+                if (item.bom && item.bom.length > 0) {
+                    item.bom.forEach(bomItem => {
+                        const insumoRef = insumos.find(i => i.id === bomItem.insumoId);
+                        if (insumoRef) {
+                            let deductQty = bomItem.qty * item.qty; // Consumo base * Qtd vendida do serviço
+                            
+                            // Conversão automática (L -> ml ou Kg -> g) se o insumo está em grandeza maior e o uso em menor
+                            // Para simplificar: assumimos que o registro do Insumo é a referência de grandeza.
+                            // Se o usuário cadastrou Shampo Automotivo como 1L, e no BOM colocou 0.1, consome 0.1L = 900ml restantes na lógica
+                            // Mas se o usuário quer ver "900ml" na tela, o sistema converte para a unidade menor
+                            if (insumoRef.unit === 'L' && deductQty < 1 && deductQty > 0) {
+                                insumoRef.stock = (insumoRef.stock * 1000) - (deductQty * 1000);
+                                insumoRef.unit = 'ml';
+                            } else if (insumoRef.unit === 'kg' && deductQty < 1 && deductQty > 0) {
+                                insumoRef.stock = (insumoRef.stock * 1000) - (deductQty * 1000);
+                                insumoRef.unit = 'g';
+                            } else {
+                                // Caso padrão ou quando o insumo já está em 'ml' ou 'g'
+                                insumoRef.stock -= deductQty;
+                            }
+                            
+                            // Prevenção de negativo
+                            if (insumoRef.stock < 0) insumoRef.stock = 0;
+                        }
+                    });
+                }
+            });
+
+            // Atualiza a grid de produtos e estoque após a venda
+            renderInventory();
+            renderProducts();
 
             // Registra a venda completa no histórico
             salesHistory.unshift({
@@ -1441,10 +2119,15 @@
                 employee: currentUser ? currentUser.name : 'Sistema',
                 client: selectedNfeClient ? selectedNfeClient.name : 'Consumidor Final',
                 items: cart.map(i => ({ name: i.name, qty: i.qty, total: i.price * i.qty })),
-                total: cart.reduce((acc, i) => acc + (i.price * i.qty), 0) * (1 + TAX_RATE),
+                tax: cart.reduce((acc, i) => acc + (i.price * i.qty), 0) * (currentBizConfig.taxRate / 100),
+                total: cart.reduce((acc, i) => acc + (i.price * i.qty), 0), // Imposto embutido no total
                 nfe: hasNfe,
-                payment: paymentText
+                payment: paymentText,
+                dueDate: selectedPaymentMethod === 'futuro' ? futureDate : null
             });
+
+            // Persiste o histórico e estoque atualizados em uma única chamada
+            saveMockData();
 
             // Limpa tudo
             clearCart();
@@ -1458,6 +2141,10 @@
             } else {
                 showToast('Venda finalizada com sucesso!', 'check-circle', 'green');
             }
+            
+            // Garante que o filtro de data esteja no hoje para mostrar a nova venda
+            const filterDateEl = document.getElementById('sales-filter-date');
+            if (filterDateEl) filterDateEl.value = dateStr;
             
             renderSalesHistory();
         }
@@ -1481,29 +2168,29 @@
 
             tbody.innerHTML = filtered.map(s => `
                 <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="p-4 font-bold text-gray-400 text-xs">${s.time}</td>
+                    <td class="p-4 font-bold text-gray-400 text-xs">${s.time || '--:--'}</td>
                     <td class="p-4">
                         <div class="flex items-center gap-2">
                             <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600">
-                                ${s.employee.charAt(0)}
+                                ${(s.employee || 'U').charAt(0)}
                             </div>
-                            <span class="text-xs font-bold text-gray-700">${s.employee}</span>
+                            <span class="text-xs font-bold text-gray-700">${s.employee || 'Usuário'}</span>
                         </div>
                     </td>
                     <td class="p-4">
-                        <span class="text-xs text-gray-600 font-medium">${s.client}</span>
+                        <span class="text-xs text-gray-600 font-medium">${s.client || 'Consumidor'}</span>
                     </td>
                     <td class="p-4">
                         <div class="flex flex-col gap-1">
-                            ${s.items.map(i => `
+                            ${(s.items || []).map(i => `
                                 <span class="text-[10px] text-gray-500 font-medium">
-                                    <b class="text-gray-800">${i.name}</b> (${i.qty}x)
+                                    <b class="text-gray-800">${i.name || 'Item'}</b> (${i.qty || 0}x)
                                 </span>
                             `).join('')}
                             <span class="text-[10px] text-primary font-bold mt-1">💳 Pagamento: ${s.payment || 'N/A'}</span>
                         </div>
                     </td>
-                    <td class="p-4 font-black text-gray-900">R$ ${s.total.toFixed(2).replace('.', ',')}</td>
+                    <td class="p-4 font-black text-gray-900">R$ ${(s.total || 0).toFixed(2).replace('.', ',')}</td>
                     <td class="p-4 text-right">
                         <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${s.nfe ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-100 text-gray-400 border border-gray-200'}">
                             ${s.nfe ? 'NFe Emitida' : 'Recibo'}
@@ -1517,10 +2204,7 @@
         // ------------------
         // NFE E CREDORES
         // ------------------
-        const mockClients = [
-            { cnpj: '11.222.333/0001-44', name: 'Empresa Alpha Tech LTDA', city: 'São Paulo - SP' },
-            { cnpj: '55.666.777/0001-88', name: 'Comércio Beta S/A', city: 'Rio de Janeiro - RJ' }
-        ];
+        const mockClients = [];
 
         function renderCredores() {
             const tbody = document.getElementById('credores-table-body');
@@ -1542,37 +2226,55 @@
             lucide.createIcons();
         }
 
-        function editCredor(idx) {
-            const c = mockClients[idx];
-            const name = sanitizeInput(prompt('Nome/Razão Social:', unescapeHTML(c.name)));
-            if(name === null) return;
-            const cnpj = sanitizeInput(prompt('CNPJ/CPF:', unescapeHTML(c.cnpj)));
-            if(cnpj === null) return;
-            const city = sanitizeInput(prompt('Cidade - UF:', unescapeHTML(c.city)));
-            if(city === null) return;
-            mockClients[idx] = { ...c, name, cnpj, city };
-            renderCredores();
-            showToast('Credor atualizado!', 'check', 'green');
-        }
-
-        function removeCredor(idx) {
-            const c = mockClients[idx];
-            if(confirm(`Remover ${c.name}?`)) {
-                mockClients.splice(idx, 1);
-                renderCredores();
-                showToast('Credor removido.', 'trash-2', 'orange');
-            }
+        function closeCredorModal() {
+            document.getElementById('credor-modal').classList.add('hidden');
         }
 
         function addNewCredor() {
-            const name = sanitizeInput(prompt('Nome ou Razão Social:'));
-            if(!name) return;
-            const cnpj = sanitizeInput(prompt('CNPJ / CPF:'));
-            if(!cnpj) return;
-            const city = sanitizeInput(prompt('Cidade - UF:', 'São Paulo - SP'));
-            mockClients.push({ cnpj, name, city: city || '' });
+            document.getElementById('credor-modal-title').innerText = "Novo Cliente / Credor";
+            document.getElementById('credor-id').value = '';
+            document.getElementById('credor-name').value = '';
+            document.getElementById('credor-cnpj').value = '';
+            document.getElementById('credor-city').value = 'São Paulo - SP';
+            document.getElementById('credor-modal').classList.remove('hidden');
+        }
+
+        function editCredor(idx) {
+            const c = mockClients[idx];
+            document.getElementById('credor-modal-title').innerText = "Editar Cliente / Credor";
+            document.getElementById('credor-id').value = idx;
+            document.getElementById('credor-name').value = unescapeHTML(c.name);
+            document.getElementById('credor-cnpj').value = unescapeHTML(c.cnpj);
+            document.getElementById('credor-city').value = unescapeHTML(c.city);
+            document.getElementById('credor-modal').classList.remove('hidden');
+        }
+
+        function saveCredor() {
+            const idxVal = document.getElementById('credor-id').value;
+            const name = sanitizeInput(document.getElementById('credor-name').value);
+            if(!name) { showToast('Nome é obrigatório!', 'alert-circle', 'red'); return; }
+            
+            const cnpj = sanitizeInput(document.getElementById('credor-cnpj').value);
+            if(!cnpj) { showToast('CNPJ / CPF é obrigatório!', 'alert-circle', 'red'); return; }
+            
+            const city = sanitizeInput(document.getElementById('credor-city').value) || '';
+
+            if(idxVal !== '') {
+                // Edit
+                const idx = parseInt(idxVal);
+                const c = mockClients[idx];
+                if(c) {
+                    mockClients[idx] = { ...c, name, cnpj, city };
+                    showToast('Credor atualizado!', 'check', 'green');
+                }
+            } else {
+                // New
+                mockClients.push({ cnpj, name, city });
+                showToast(`${name} adicionado!`, 'user-plus', 'green');
+            }
+            
             renderCredores();
-            showToast(`${name} adicionado!`, 'user-plus', 'green');
+            closeCredorModal();
         }
 
         function openNfeModal() {
@@ -1640,18 +2342,22 @@
         // NAVEGAÇÃO E UI
         // ------------------
         function switchTab(tabId) {
-            // Regra de Negócio: Somente proprietário vê o Dashboard
-            if(tabId === 'dashboard' && currentUser?.role !== 'proprietario') {
-                showToast('Acesso negado: Somente o proprietário pode ver o painel analítico.', 'lock', 'red');
+            // Regra de Negócio: Somente proprietário e gerente veem Dashboard, Equipe e Financeiro
+            const isOwnerOrManager = currentUser?.role === 'proprietario' || currentUser?.role === 'gerente';
+            const restrictedTabs = ['dashboard', 'equipe', 'financeiro'];
+            
+            if(restrictedTabs.includes(tabId) && !isOwnerOrManager) {
+                showToast('Acesso negado: Somente proprietário ou gerente podem acessar esta área.', 'lock', 'red');
                 return;
             }
 
             // Oculta todas
-            document.getElementById('view-pdv').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('view-estoque').classList.add('hidden');
-            document.getElementById('view-equipe').classList.add('hidden');
-            document.getElementById('view-credores').classList.add('hidden');
+            document.getElementById('view-pdv')?.classList.add('hidden');
+            document.getElementById('view-dashboard')?.classList.add('hidden');
+            document.getElementById('view-estoque')?.classList.add('hidden');
+            document.getElementById('view-equipe')?.classList.add('hidden');
+            document.getElementById('view-credores')?.classList.add('hidden');
+            document.getElementById('view-financeiro')?.classList.add('hidden');
             
             // Reseta cores dos botões
             document.querySelectorAll('nav button').forEach(btn => {
@@ -1661,8 +2367,8 @@
 
             // Ativa selecionada
             document.getElementById(`view-${tabId}`)?.classList.remove('hidden');
-            document.getElementById(`nav-${tabId}`).classList.remove('text-gray-300', 'hover:bg-gray-800');
-            document.getElementById(`nav-${tabId}`).classList.add('bg-primary', 'text-white');
+            document.getElementById(`nav-${tabId}`)?.classList.remove('text-gray-300', 'hover:bg-gray-800');
+            document.getElementById(`nav-${tabId}`)?.classList.add('bg-primary', 'text-white');
 
             // Atualiza Título
             const titles = {
@@ -1670,7 +2376,8 @@
                 'dashboard': 'Gestão do Meu Negócio',
                 'estoque': 'Gestão de Estoque e Insumos',
                 'equipe': 'Equipe, Metas e Produtividade',
-                'credores': 'Credores e Clientes'
+                'credores': 'Gestão de Clientes',
+                'financeiro': 'Financeiro & Lançamentos'
             };
             document.getElementById('page-title').innerText = titles[tabId] || 'GlobalPOS';
 
@@ -1691,33 +2398,146 @@
                 renderTeam();
             } else if (tabId === 'credores') {
                 renderCredores();
+            } else if (tabId === 'financeiro') {
+                updateFinanceDashboard();
             }
             
             if(tabId === 'dashboard') {
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('sales-filter-date').value = today;
-                renderSalesHistory();
+                const dateEl = document.getElementById('sales-filter-date');
+                if(dateEl) {
+                    const today = new Date().toISOString().split('T')[0];
+                    dateEl.value = today;
+                    renderSalesHistory();
+                }
             }
+        }
+
+        function updateFinanceDashboard() {
+            const today = new Date().toISOString().split('T')[0];
+            let receivedToday = 0;
+            let pendingTotal = 0;
+            const tbody = document.getElementById('finance-table-body');
+            
+            if (tbody) tbody.innerHTML = '';
+
+            salesHistory.forEach(sale => {
+                const isPaid = !sale.payment.includes('Fiado');
+                const isToday = sale.date === today;
+
+                if (isToday && isPaid) {
+                    receivedToday += sale.total || 0;
+                }
+                
+                if (!isPaid) {
+                    pendingTotal += sale.total || 0;
+                }
+
+                if (tbody) {
+                    // Lógica de Data Prevista baseada no meio de pagamento
+                    let dueDate = sale.dueDate || sale.date;
+                    let statusClass = 'bg-emerald-100 text-emerald-700';
+                    let statusText = 'Sincronizado';
+
+                    if (sale.payment.includes('Crédito')) {
+                        const d = new Date(sale.date);
+                        d.setDate(d.getDate() + 30);
+                        dueDate = d.toISOString().split('T')[0];
+                        statusClass = 'bg-blue-100 text-blue-700';
+                        statusText = 'Aguardando Prazo';
+                    } else if (sale.payment.includes('Fiado')) {
+                        statusClass = 'bg-orange-100 text-orange-700';
+                        statusText = 'A Receber (Fiado)';
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-4 font-medium text-gray-800">${dueDate.split('-').reverse().join('/')}</td>
+                            <td class="p-4 text-gray-600">${sale.payment}</td>
+                            <td class="p-4 text-gray-600 truncate max-w-[200px]">${sale.items.map(i => i.name).join(', ')}</td>
+                            <td class="p-4 font-bold text-gray-800">R$ ${(sale.total || 0).toFixed(2).replace('.', ',')}</td>
+                            <td class="p-4"><span class="px-2 py-1 ${statusClass} rounded text-[10px] font-bold uppercase">${statusText}</span></td>
+                        </tr>
+                    `;
+                }
+            });
+
+            if (tbody && salesHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400 italic">Nenhuma movimentação registrada.</td></tr>';
+            }
+
+            const receivedEl = document.getElementById('fin-total-received');
+            const pendingEl = document.getElementById('fin-total-pending');
+
+            if (receivedEl) receivedEl.innerText = `R$ ${receivedToday.toFixed(2).replace('.', ',')}`;
+            if (pendingEl) pendingEl.innerText = `R$ ${pendingTotal.toFixed(2).replace('.', ',')}`;
+        }
+
+        function updateDefaultTaxRate(prefix) {
+            const taxType = document.getElementById(prefix === 'biz' ? 'biz-tax' : 'setup-biz-tax').value;
+            const rateInput = document.getElementById(prefix === 'biz' ? 'biz-tax-rate' : 'setup-biz-tax-rate');
+            
+            let rate = 0;
+            switch(taxType) {
+                case 'simples': rate = 6.00; break;
+                case 'lucro_presumido': rate = 15.00; break;
+                case 'lucro_real': rate = 18.00; break;
+            }
+            rateInput.value = rate.toFixed(2);
         }
 
         function saveBusinessData() {
             const data = {
                 type: document.getElementById('biz-type').value,
                 size: document.getElementById('biz-size').value,
-                tax: document.getElementById('biz-tax').value
+                tax: document.getElementById('biz-tax').value,
+                taxRate: parseFloat(document.getElementById('biz-tax-rate').value) || 0
             };
+            currentBizConfig = data;
             localStorage.setItem('pos_business_data', JSON.stringify(data));
             showToast('Dados do negócio salvos com sucesso!', 'check', 'green');
+            if (typeof updateCartUI === 'function') updateCartUI();
         }
 
         function loadBusinessData() {
             const saved = localStorage.getItem('pos_business_data');
             if (saved) {
                 const data = JSON.parse(saved);
-                document.getElementById('biz-type').value = data.type;
-                document.getElementById('biz-size').value = data.size;
-                document.getElementById('biz-tax').value = data.tax;
+                currentBizConfig = data;
+                currentBizConfig.taxRate = parseFloat(data.taxRate) || 0;
+                
+                const titleSpan = document.querySelector('aside .font-bold.text-xl');
+                if (titleSpan && data.name) {
+                    titleSpan.innerHTML = `${data.name}<span class="text-secondary text-xs align-top">PRO</span>`;
+                }
+                
+                if (document.getElementById('biz-type')) document.getElementById('biz-type').value = data.type || '';
+                if (document.getElementById('biz-size')) document.getElementById('biz-size').value = data.size || '';
+                if (document.getElementById('biz-tax')) document.getElementById('biz-tax').value = data.tax || '';
+                if (document.getElementById('biz-tax-rate')) document.getElementById('biz-tax-rate').value = data.taxRate || '0.00';
             }
+        }
+
+        function finishSetup() {
+            const name = document.getElementById('setup-biz-name').value;
+            if(!name) {
+                showToast('Informe o nome da empresa!', 'alert-circle', 'red');
+                return;
+            }
+            const data = {
+                name: name,
+                type: document.getElementById('setup-biz-type').value,
+                size: document.getElementById('setup-biz-size').value,
+                tax: document.getElementById('setup-biz-tax').value,
+                taxRate: parseFloat(document.getElementById('setup-biz-tax-rate').value) || 0
+            };
+            currentBizConfig = data;
+            localStorage.setItem('pos_business_data', JSON.stringify(data));
+            
+            document.getElementById('setup-screen').classList.add('hidden');
+            showToast(`Configuração concluída! Bem-vindo(a), ${currentUser.name}.`, 'check-circle', 'green');
+            
+            loadBusinessData();
+            switchTab('pdv');
         }
 
         function toggleConnection() {
@@ -1808,22 +2628,6 @@
         // ------------------
         // FUNÇÕES AUXILIARES ADICIONAIS
         // ------------------
-        function addNewProduct() {
-            const name = sanitizeInput(prompt('Nome do novo item:'));
-            if(!name) return;
-            const typeStr = sanitizeInput(prompt('Tipo (service / product):', 'service'));
-            const price = parseFloat(prompt('Preço de venda (R$):', '0'));
-            if(isNaN(price)) return;
-            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-            products.push({
-                id: newId, name, type: typeStr === 'product' ? 'product' : 'service',
-                price, img: 'box', color: 'bg-gray-100 text-gray-600',
-                stock: typeStr === 'product' ? 0 : null, bom: []
-            });
-            renderInventory();
-            renderProducts();
-            showToast(`${name} adicionado!`, 'plus', 'green');
-        }
 
         function doCheckIn(memberId) {
             const member = teamMembers.find(m => m.id === memberId);
@@ -1874,8 +2678,170 @@
             showToast('Novo cliente cadastrado e selecionado!', 'user-plus', 'green');
         }
 
+        function saveMockData() {
+            localStorage.setItem('pos_mock_products', JSON.stringify(products));
+            localStorage.setItem('pos_mock_insumos', JSON.stringify(insumos));
+            localStorage.setItem('pos_mock_sales', JSON.stringify(salesHistory));
+            localStorage.setItem('pos_mock_team', JSON.stringify(teamMembers));
+        }
+
+        function loadMockData() {
+            try {
+                const savedProducts = localStorage.getItem('pos_mock_products');
+                if(savedProducts) products.splice(0, products.length, ...JSON.parse(savedProducts));
+                
+                const savedInsumos = localStorage.getItem('pos_mock_insumos');
+                if(savedInsumos) insumos.splice(0, insumos.length, ...JSON.parse(savedInsumos));
+                
+                const savedSales = localStorage.getItem('pos_mock_sales');
+                if(savedSales) salesHistory.splice(0, salesHistory.length, ...JSON.parse(savedSales));
+
+                const savedTeam = localStorage.getItem('pos_mock_team');
+                if(savedTeam) {
+                    const parsedTeam = JSON.parse(savedTeam);
+                    if(parsedTeam && parsedTeam.length > 0) {
+                        teamMembers.splice(0, teamMembers.length, ...parsedTeam);
+                    }
+                }
+                
+                // Fallback de segurança: se a equipe estiver vazia, restaura o proprietário
+                if(teamMembers.length === 0) {
+                    teamMembers.push({ id: 1, name: 'Administrador', nickname: 'Admin', role: 'Proprietário', password: 'admin', avatar: 'https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff', status: 'online', checkIn: '00:00', points: 0, goal: 5000.00 });
+                }
+            } catch(e) {
+                console.error('Erro ao carregar dados locais. Cache pode estar corrompido.', e);
+                localStorage.removeItem('pos_mock_products');
+                localStorage.removeItem('pos_mock_insumos');
+                localStorage.removeItem('pos_mock_sales');
+                localStorage.removeItem('pos_mock_team');
+            }
+        }
+
+        function openExportModal() {
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const today = `${yyyy}-${mm}-${dd}`;
+            
+            document.getElementById('export-start-date').value = today;
+            document.getElementById('export-end-date').value = today;
+            document.getElementById('export-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeExportModal() {
+            document.getElementById('export-modal').classList.add('hidden');
+        }
+
+        function exportarFinanceiro() {
+            const startDate = document.getElementById('export-start-date').value;
+            const endDate = document.getElementById('export-end-date').value;
+            
+            if (!startDate || !endDate) {
+                showToast('Selecione as datas para exportação.', 'alert-circle', 'orange');
+                return;
+            }
+
+            const unexported = salesHistory.filter(s => {
+                if (s.exported) return false;
+                if (s.date < startDate || s.date > endDate) return false;
+                return true;
+            });
+            
+            if (unexported.length === 0) {
+                showToast('Não há lançamentos pendentes nesse período.', 'alert-circle', 'orange');
+                return;
+            }
+
+            const headers = ['descricao', 'valor', 'data_vencimento', 'data_pagamento', 'status', 'categoria_principal', 'categoria', 'tipo_transacao'];
+            const rows = [headers.join(';')];
+
+            const batches = {};
+
+            unexported.forEach(sale => {
+                let p = sale.payment || 'Outros';
+                let key = `${p}___${sale.date}`;
+                
+                if (!batches[key]) {
+                    batches[key] = {
+                        payment: p,
+                        total: 0,
+                        date: sale.date
+                    };
+                }
+                batches[key].total += sale.total;
+                sale.exported = true; // Marca como exportado para não repetir
+            });
+
+            // Persiste a flag de exportado no banco de dados local
+            saveMockData();
+
+            for (const key of Object.keys(batches)) {
+                const data = batches[key];
+                const payment = data.payment;
+                
+                const [y, m, d] = data.date.split('-');
+                const descDate = `${d}/${m}/${y}`;
+                const desc = `Lote ${payment} - Fechamento ${descDate}`.substring(0, 50);
+                
+                const valor = data.total.toFixed(2).replace('.', ','); // Padrão brasileiro para CSV/Excel
+                let dueDate = data.date;
+                let payDate = data.date;
+                let status = 'PAID';
+                
+                const baseDate = new Date(data.date + 'T12:00:00Z');
+
+                if (payment.includes('Débito')) {
+                    baseDate.setDate(baseDate.getDate() + 1);
+                    dueDate = baseDate.toISOString().split('T')[0];
+                    payDate = '';
+                    status = 'PENDING';
+                } else if (payment.includes('Crédito')) {
+                    baseDate.setDate(baseDate.getDate() + 30);
+                    dueDate = baseDate.toISOString().split('T')[0];
+                    payDate = '';
+                    status = 'PENDING';
+                } else if (payment.includes('Fiado') || payment.includes('Futuro')) {
+                    dueDate = data.date;
+                    payDate = '';
+                    status = 'PENDING';
+                }
+
+                const mainCategory = 'Produto'; 
+                const category = 'Vendas PDV (Lote)';
+                const type = 'INCOME';
+
+                // Escapa aspas e monta a linha
+                const safeDesc = `"${desc.replace(/"/g, '""')}"`;
+                rows.push([safeDesc, valor, dueDate, payDate, status, mainCategory, category, type].join(';'));
+            }
+
+            // Gera o CSV com BOM para o Excel reconhecer UTF-8 no Windows
+            const csvContent = '\ufeff' + rows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            
+            link.href = url;
+            link.download = `lotes_pdv_${new Date().toISOString().split('T')[0]}.csv`;
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            showToast('Lotes exportados com sucesso!', 'download', 'green');
+            closeExportModal();
+        }
+
         // Inicialização
         window.onload = () => {
+            loadMockData();
             renderProducts();
             populateLoginSelect();
         };
