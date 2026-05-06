@@ -1,0 +1,3 @@
+## 2024-05-06 - N+1 Query Antipattern in Multi-step Use Cases
+**Learning:** Found a common anti-pattern where an entity (e.g., an Item) is fetched by ID in multiple separate loops within the same use case (once for validation, again for post-transaction actions like deducting stock). This causes duplicate DB queries (2N instead of N).
+**Action:** Always introduce an in-memory `Map` cache during the first loop for multi-step processing of list items so that subsequent steps don't query the database again.
