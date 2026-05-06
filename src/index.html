@@ -177,7 +177,7 @@
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Tipo de Negócio</label>
+                        <label for="biz-type" class="block text-xs font-bold text-gray-400 uppercase mb-1">Tipo de Negócio</label>
                         <select id="biz-type" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm">
                             <option value="servico">Prestação de Serviços</option>
                             <option value="comercio">Comércio Varejista</option>
@@ -185,7 +185,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Porte da Empresa</label>
+                        <label for="biz-size" class="block text-xs font-bold text-gray-400 uppercase mb-1">Porte da Empresa</label>
                         <select id="biz-size" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm">
                             <option value="mei">MEI (Microempreendedor)</option>
                             <option value="me">ME (Microempresa)</option>
@@ -193,7 +193,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Regime Tributário</label>
+                        <label for="biz-tax" class="block text-xs font-bold text-gray-400 uppercase mb-1">Regime Tributário</label>
                         <select id="biz-tax" onchange="updateDefaultTaxRate('biz')" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm">
                             <option value="simples">Simples Nacional</option>
                             <option value="lucro_presumido">Lucro Presumido</option>
@@ -201,7 +201,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Alíquota de Imposto (%)</label>
+                        <label for="biz-tax-rate" class="block text-xs font-bold text-gray-400 uppercase mb-1">Alíquota de Imposto (%)</label>
                         <div class="relative">
                             <input type="number" id="biz-tax-rate" step="0.01" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50 text-sm font-bold" placeholder="0.00">
                             <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
@@ -224,11 +224,11 @@
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Arquivo PFX (A1)</label>
+                        <label for="cert-file" class="block text-xs font-bold text-gray-400 uppercase mb-1">Arquivo PFX (A1)</label>
                         <input type="file" id="cert-file" accept=".pfx,.p12" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-600 cursor-pointer focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Senha do Certificado</label>
+                        <label for="cert-pass" class="block text-xs font-bold text-gray-400 uppercase mb-1">Senha do Certificado</label>
                         <input type="password" id="cert-pass" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none text-sm" placeholder="Digite a senha do certificado">
                     </div>
                 </div>
@@ -411,7 +411,7 @@
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Consulte vendas por data e detalhes de operação</p>
                     </div>
                     <div class="flex items-center gap-3 bg-white p-2 rounded-xl border border-gray-200 shadow-sm">
-                        <label class="text-xs font-bold text-gray-400 uppercase ml-2">Data:</label>
+                        <label for="sales-filter-date" class="text-xs font-bold text-gray-400 uppercase ml-2">Data:</label>
                         <input type="date" id="sales-filter-date" onchange="renderSalesHistory()" class="text-sm font-bold text-gray-700 outline-none border-none bg-transparent cursor-pointer">
                     </div>
                 </div>
@@ -588,15 +588,15 @@
                     </h4>
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Conta Destino</label>
-                            <select class="w-full px-3 py-1.5 rounded bg-gray-50 border border-gray-200 text-xs outline-none focus:border-primary">
+                            <label for="config-conta-destino" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Conta Destino</label>
+                            <select id="config-conta-destino" class="w-full px-3 py-1.5 rounded bg-gray-50 border border-gray-200 text-xs outline-none focus:border-primary">
                                 <option>Banco Inter (Conta Principal)</option>
                                 <option>Nubank (Reserva)</option>
                                 <option>Fluxo Central</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Prazo Cartão de Crédito</label>
+                            <label for="config-prazo-cartao" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Prazo Cartão de Crédito</label>
                             <select id="config-prazo-cartao" class="w-full px-3 py-1.5 rounded bg-gray-50 border border-gray-200 text-xs outline-none focus:border-primary">
                                 <option value="30">Padrão (30 dias)</option>
                                 <option value="14">Antecipado (14 dias)</option>
@@ -604,7 +604,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Taxa da Maquininha (%)</label>
+                            <label for="config-taxa-maquininha" class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Taxa da Maquininha (%)</label>
                             <input type="number" id="config-taxa-maquininha" step="0.01" value="2.50" class="w-full px-3 py-1.5 rounded bg-gray-50 border border-gray-200 text-xs outline-none focus:border-primary font-bold text-gray-700">
                         </div>
                         <button class="w-full bg-gray-800 text-white text-xs font-bold py-2 rounded hover:bg-black transition-colors">
@@ -682,7 +682,8 @@
 
                 <!-- Meio de Pagamento -->
                 <div class="mb-6">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-3">Selecione o Meio de Pagamento</label>
+                    <fieldset>
+                        <legend class="block text-xs font-bold text-gray-500 uppercase mb-3">Selecione o Meio de Pagamento</legend>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                         <button onclick="selectPaymentMethod('pix')" id="pay-pix" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-100 hover:border-primary transition-all group">
                             <i data-lucide="qr-code" class="w-6 h-6 text-gray-400 mb-1 payment-icon"></i>
@@ -701,11 +702,12 @@
                             <span class="text-[10px] font-bold text-gray-500 payment-label text-center leading-tight">PAG. FUTURO<br>(Fiado)</span>
                         </button>
                     </div>
+                    </fieldset>
                 </div>
 
                 <!-- Opções de Parcelamento (Oculto por padrão) -->
                 <div id="installment-area" class="hidden mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100 fade-in">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Parcelas (Crédito)</label>
+                    <label for="checkout-installments" class="block text-xs font-bold text-gray-500 uppercase mb-2">Parcelas (Crédito)</label>
                     <select id="checkout-installments" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-primary font-bold text-gray-700">
                         <option value="1">1x (À Vista)</option>
                         <option value="2">2x sem juros</option>
@@ -719,7 +721,7 @@
 
                 <!-- Data para Pagamento Futuro -->
                 <div id="future-date-area" class="hidden mb-6 p-4 bg-orange-50 rounded-xl border border-orange-100 fade-in">
-                    <label class="block text-xs font-bold text-orange-600 uppercase mb-2">Previsão de Recebimento (Fiado)</label>
+                    <label for="checkout-future-date" class="block text-xs font-bold text-orange-600 uppercase mb-2">Previsão de Recebimento (Fiado)</label>
                     <input type="date" id="checkout-future-date" class="w-full px-4 py-2 rounded-lg border border-orange-200 outline-none focus:ring-2 focus:ring-orange-500 font-bold text-gray-700">
                 </div>
                 
@@ -759,7 +761,7 @@
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Buscar por CNPJ</label>
+                        <label for="nfe-cnpj" class="block text-xs font-bold text-gray-400 uppercase mb-1">Buscar por CNPJ</label>
                         <div class="flex gap-2">
                             <input type="text" id="nfe-cnpj" placeholder="00.000.000/0000-00" class="flex-1 px-4 py-2 border border-gray-200 rounded-lg outline-none focus:border-primary text-sm">
                             <button onclick="searchClientByCnpj()" aria-label="Buscar CNPJ" class="bg-gray-800 hover:bg-gray-900 text-white px-4 rounded-lg text-sm font-bold"><i data-lucide="search" class="w-4 h-4"></i></button>
@@ -804,14 +806,14 @@
                         </h4>
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Preço de Venda</label>
+                                <label for="pd-price" class="block text-xs font-bold text-gray-500 mb-1">Preço de Venda</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">R$</span>
                                     <input type="number" id="pd-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary font-bold text-gray-800">
                                 </div>
                             </div>
                             <div id="pd-stock-container">
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Estoque Atual</label>
+                                <label for="pd-stock" class="block text-xs font-bold text-gray-500 mb-1">Estoque Atual</label>
                                 <input type="number" id="pd-stock" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary font-bold text-gray-800">
                             </div>
                         </div>
@@ -859,15 +861,15 @@
                 <div class="p-5 space-y-4">
                     <input type="hidden" id="insumo-id">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Nome</label>
+                        <label for="insumo-name" class="block text-xs font-bold text-gray-500 mb-1">Nome</label>
                         <input type="text" id="insumo-name" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Custo Base (R$)</label>
+                        <label for="insumo-price" class="block text-xs font-bold text-gray-500 mb-1">Custo Base (R$)</label>
                         <input type="number" id="insumo-price" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Unidade de Medida</label>
+                        <label for="insumo-unit" class="block text-xs font-bold text-gray-500 mb-1">Unidade de Medida</label>
                         <select id="insumo-unit" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                             <option value="un">Unidade (un)</option>
                             <option value="kg">Quilo (kg)</option>
@@ -877,7 +879,7 @@
                         </select>
                     </div>
                     <div id="insumo-stock-div">
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Quantidade Inicial</label>
+                        <label for="insumo-stock" class="block text-xs font-bold text-gray-500 mb-1">Quantidade Inicial</label>
                         <input type="number" id="insumo-stock" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                     </div>
                 </div>
@@ -898,7 +900,7 @@
                     <input type="hidden" id="add-stock-id">
                     <p class="text-sm font-bold text-gray-600" id="add-stock-name"></p>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Quantidade a Somar</label>
+                        <label for="add-stock-qty" class="block text-xs font-bold text-gray-500 mb-1">Quantidade a Somar</label>
                         <div class="flex items-center gap-2">
                             <input type="number" id="add-stock-qty" step="0.01" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary text-lg font-black text-green-600">
                             <span id="add-stock-unit" class="text-xs font-bold text-gray-400 uppercase"></span>
@@ -923,11 +925,11 @@
                     
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Data Inicial</label>
+                            <label for="export-start-date" class="block text-xs font-bold text-gray-500 mb-1">Data Inicial</label>
                             <input type="date" id="export-start-date" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm font-bold text-gray-700">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Data Final</label>
+                            <label for="export-end-date" class="block text-xs font-bold text-gray-500 mb-1">Data Final</label>
                             <input type="date" id="export-end-date" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm font-bold text-gray-700">
                         </div>
                     </div>
@@ -952,15 +954,15 @@
                 <div class="p-5 space-y-4">
                     <input type="hidden" id="team-member-id">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Nome Completo</label>
+                        <label for="team-name" class="block text-xs font-bold text-gray-500 mb-1">Nome Completo</label>
                         <input type="text" id="team-name" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Ex: Ana Souza">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Apelido Interno (Opcional)</label>
+                        <label for="team-nickname" class="block text-xs font-bold text-gray-500 mb-1">Apelido Interno (Opcional)</label>
                         <input type="text" id="team-nickname" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Como deseja chamá-lo?">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Cargo / Função</label>
+                        <label for="team-role" class="block text-xs font-bold text-gray-500 mb-1">Cargo / Função</label>
                         <select id="team-role" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                             <option value="Vendedor">Vendedor / Atendente</option>
                             <option value="Caixa">Operador de Caixa</option>
@@ -968,11 +970,11 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Senha de Acesso</label>
+                        <label for="team-password" class="block text-xs font-bold text-gray-500 mb-1">Senha de Acesso</label>
                         <input type="password" id="team-password" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Defina a senha">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Meta de Vendas (R$)</label>
+                        <label for="team-goal" class="block text-xs font-bold text-gray-500 mb-1">Meta de Vendas (R$)</label>
                         <input type="number" id="team-goal" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="5000.00">
                     </div>
                 </div>
@@ -996,24 +998,24 @@
                 <div class="p-5 space-y-4">
                     <input type="hidden" id="product-id">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Nome do Item</label>
+                        <label for="product-name" class="block text-xs font-bold text-gray-500 mb-1">Nome do Item</label>
                         <input type="text" id="product-name" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Tipo</label>
+                            <label for="product-type" class="block text-xs font-bold text-gray-500 mb-1">Tipo</label>
                             <select id="product-type" onchange="toggleProductStockField()" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                                 <option value="produto">Produto Físico</option>
                                 <option value="servico">Serviço</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Preço de Venda</label>
+                            <label for="product-price" class="block text-xs font-bold text-gray-500 mb-1">Preço de Venda</label>
                             <input type="number" id="product-price" step="0.01" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                         </div>
                     </div>
                     <div id="product-stock-div">
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Quantidade Inicial</label>
+                        <label for="product-stock" class="block text-xs font-bold text-gray-500 mb-1">Quantidade Inicial</label>
                         <input type="number" id="product-stock" step="1" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                     </div>
                 </div>
@@ -1037,15 +1039,15 @@
                 <div class="p-5 space-y-4">
                     <input type="hidden" id="credor-id">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Nome ou Razão Social</label>
+                        <label for="credor-name" class="block text-xs font-bold text-gray-500 mb-1">Nome ou Razão Social</label>
                         <input type="text" id="credor-name" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">CNPJ / CPF</label>
+                        <label for="credor-cnpj" class="block text-xs font-bold text-gray-500 mb-1">CNPJ / CPF</label>
                         <input type="text" id="credor-cnpj" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Cidade - UF</label>
+                        <label for="credor-city" class="block text-xs font-bold text-gray-500 mb-1">Cidade - UF</label>
                         <input type="text" id="credor-city" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Ex: São Paulo - SP">
                     </div>
                 </div>
@@ -1072,13 +1074,13 @@
                 <div class="p-8">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Usuário</label>
+                            <label for="login-user-select" class="block text-xs font-bold text-gray-400 uppercase mb-1">Usuário</label>
                             <select id="login-user-select" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary outline-none bg-gray-50">
                                 <!-- Preenchido via JS -->
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Senha</label>
+                            <label for="login-password" class="block text-xs font-bold text-gray-400 uppercase mb-1">Senha</label>
                             <input type="password" id="login-password" placeholder="Digite sua senha" 
                                    onkeyup="if(event.key === 'Enter') handleLogin()"
                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary outline-none">
@@ -1108,11 +1110,11 @@
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nome da Empresa / Fantasia</label>
+                        <label for="setup-biz-name" class="block text-xs font-bold text-gray-500 uppercase mb-1">Nome da Empresa / Fantasia</label>
                         <input type="text" id="setup-biz-name" placeholder="Ex: Barbearia do João" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tipo de Negócio</label>
+                        <label for="setup-biz-type" class="block text-xs font-bold text-gray-500 uppercase mb-1">Tipo de Negócio</label>
                         <select id="setup-biz-type" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary">
                             <option value="servico">Prestação de Serviços</option>
                             <option value="comercio">Comércio Varejista</option>
@@ -1120,7 +1122,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Porte da Empresa</label>
+                        <label for="setup-biz-size" class="block text-xs font-bold text-gray-500 uppercase mb-1">Porte da Empresa</label>
                         <select id="setup-biz-size" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary">
                             <option value="mei">MEI (Microempreendedor)</option>
                             <option value="me">ME (Microempresa)</option>
@@ -1128,7 +1130,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Regime Tributário</label>
+                        <label for="setup-biz-tax" class="block text-xs font-bold text-gray-500 uppercase mb-1">Regime Tributário</label>
                         <select id="setup-biz-tax" onchange="updateDefaultTaxRate('setup')" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary">
                             <option value="simples">Simples Nacional</option>
                             <option value="lucro_presumido">Lucro Presumido</option>
@@ -1136,7 +1138,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Alíquota de Imposto (%)</label>
+                        <label for="setup-biz-tax-rate" class="block text-xs font-bold text-gray-500 uppercase mb-1">Alíquota de Imposto (%)</label>
                         <div class="relative">
                             <input type="number" id="setup-biz-tax-rate" step="0.01" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none focus:border-primary font-bold" placeholder="6.00">
                             <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
