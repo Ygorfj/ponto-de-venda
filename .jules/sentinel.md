@@ -1,4 +1,4 @@
-## 2024-05-24 - Unsanitized User Input Leading to XSS
-**Vulnerability:** Found multiple instances where user input from `prompt()` or form inputs was used directly without sanitization, and then displayed using `.innerHTML`.
-**Learning:** Even internal or local-first tools (like this POS system) can be vulnerable to Cross-Site Scripting (XSS) if user input isn't properly sanitized. This is especially risky when input is displayed to other users (e.g., manager names).
-**Prevention:** Always sanitize user input before storing it or displaying it via `.innerHTML`, or prefer `.textContent`/`.innerText` over `.innerHTML` when displaying plain text.
+## 2024-05-18 - [Fix DOM-based XSS in HTML rendering]
+**Vulnerability:** User-provided inputs and variables from data sources (like `item.name`, `c.name`, `m.name`) were being interpolated directly into `.innerHTML` assignments via template literals without any sanitization in `src/index.html`. Also, `sanitizeInput` was brittle since it failed for non-string inputs.
+**Learning:** This exposes the application to DOM-based Cross-Site Scripting (XSS) if any data source or user input contains malicious HTML or script tags. The custom `sanitizeInput` was also implemented in a way that would throw a TypeError for non-string inputs (like integers).
+**Prevention:** Always wrap dynamically injected variables in a robust sanitization function (like the updated `sanitizeInput()` that handles non-string conversions safely) when assigning to `.innerHTML` or interpolating inside HTML strings. Prefer using `textContent` or `innerText` whenever possible instead of `innerHTML`.

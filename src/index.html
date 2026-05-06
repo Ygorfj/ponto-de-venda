@@ -1173,8 +1173,8 @@
         let currentBizConfig = { size: 'mei', tax: 'simples', taxRate: 0 }; 
 
         function sanitizeInput(str) {
-            if (!str) return str;
-            return str.replace(/[&<>'"]/g,
+            if (str === null || str === undefined) return str;
+            return String(str).replace(/[&<>'"]/g,
                 tag => ({
                     '&': '&amp;',
                     '<': '&lt;',
@@ -1205,7 +1205,7 @@
         function populateLoginSelect() {
             const select = document.getElementById('login-user-select');
             if(!select) return;
-            select.innerHTML = teamMembers.map(m => `<option value="${m.id}">${m.name} (${m.role})</option>`).join('');
+            select.innerHTML = teamMembers.map(m => `<option value="${sanitizeInput(m.id)}">${sanitizeInput(m.name)} (${sanitizeInput(m.role)})</option>`).join('');
         }
 
         function handleLogin() {
@@ -1910,7 +1910,7 @@
                 container.innerHTML += `
                     <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100 mb-2 shadow-sm fade-in">
                         <div class="flex-1">
-                            <p class="font-bold text-gray-800 text-sm truncate">${item.name}</p>
+                            <p class="font-bold text-gray-800 text-sm truncate">${sanitizeInput(item.name)}</p>
                             <p class="text-xs text-gray-500">${item.qty}x R$ ${item.price.toFixed(2).replace('.', ',')}</p>
                         </div>
                         <div class="flex items-center gap-3">
@@ -2216,7 +2216,7 @@
             mockClients.forEach((c, idx) => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50">
-                        <td class="p-4 font-bold text-gray-800">${c.name}</td>
+                        <td class="p-4 font-bold text-gray-800">${sanitizeInput(c.name)}</td>
                         <td class="p-4 text-sm text-gray-600">${c.cnpj}</td>
                         <td class="p-4 text-sm text-gray-600">${c.city}</td>
                         <td class="p-4 text-right">
