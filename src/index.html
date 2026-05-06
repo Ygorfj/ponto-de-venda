@@ -1303,7 +1303,7 @@
                 const isOnline = m.status === 'online';
                 const isOwnerOrManager = currentUser.role === 'proprietario' || currentUser.role === 'gerente';
                 const canEdit = isOwnerOrManager && m.role !== 'Proprietário';
-                const displayName = isOwnerOrManager && m.nickname ? `${m.name} <span class="text-xs text-primary font-normal italic">"${m.nickname}"</span>` : m.name;
+                const displayName = isOwnerOrManager && m.nickname ? `${sanitizeInput(m.name)} <span class="text-xs text-primary font-normal italic">"${sanitizeInput(m.nickname)}"</span>` : sanitizeInput(m.name);
 
                 teamContainer.innerHTML += `
                     <div class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 group">
@@ -2507,7 +2507,7 @@
                 
                 const titleSpan = document.querySelector('aside .font-bold.text-xl');
                 if (titleSpan && data.name) {
-                    titleSpan.innerHTML = `${data.name}<span class="text-secondary text-xs align-top">PRO</span>`;
+                    titleSpan.innerHTML = `${sanitizeInput(data.name)}<span class="text-secondary text-xs align-top">PRO</span>`;
                 }
                 
                 if (document.getElementById('biz-type')) document.getElementById('biz-type').value = data.type || '';
