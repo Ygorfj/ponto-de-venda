@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
 // Substitua os valores abaixo pelas informações do seu console Firebase
@@ -22,4 +22,20 @@ const analytics = getAnalytics(app);
 window.db = getFirestore(app);
 window.auth = getAuth(app);
 
-console.log("🚀 Firebase SaaS Engine: Conectado e Carregado do Arquivo Externo");
+// Utilitários de Auth expostos globalmente
+window.firebaseAuth = {
+    signIn: signInWithEmailAndPassword,
+    signUp: createUserWithEmailAndPassword,
+    signOut: signOut,
+    onAuthStateChanged: onAuthStateChanged
+};
+
+// Utilitários de Firestore expostos globalmente
+window.firebaseDb = {
+    doc,
+    setDoc,
+    getDoc
+};
+
+console.log("🚀 Firebase SaaS Engine: Conectado e Funções Expostas");
+
