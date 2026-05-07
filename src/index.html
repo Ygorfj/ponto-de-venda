@@ -1307,7 +1307,25 @@
                 const userCredential = await window.firebaseAuth.signIn(window.auth, email, pass);
                 const user = userCredential.user;
                 
-                // Busca dados adicionais no Firestore
+                // BYPASS DIRETO PARA O DESENVOLVEDOR NO LOGIN
+                if (user.email === 'ygorfj@gmail.com') {
+                    currentUser = { 
+                        id: user.uid, 
+                        name: "Ygor Developer", 
+                        role: "admin",
+                        tenantId: "master_tenant",
+                        avatar: `https://ui-avatars.com/api/?name=Ygor+Dev&background=4F46E5&color=fff`
+                    };
+                    document.getElementById('login-password').value = ''; 
+                    updateUserProfileUI();
+                    document.getElementById('login-screen').classList.add('hidden');
+                    showToast(`Acesso Developer: Bem-vindo, Ygor!`, 'shield-check', 'green');
+                    switchTab('pdv');
+                    loadBusinessData();
+                    return;
+                }
+
+                // Busca dados adicionais no Firestore para demais usuários
                 const userDoc = await window.firebaseDb.getDoc(window.firebaseDb.doc(window.db, "users", user.uid));
                 
                 if (userDoc.exists()) {
@@ -3084,17 +3102,30 @@
             // Verifica sessão ativa
             window.firebaseAuth.onAuthStateChanged(window.auth, async (user) => {
                 if (user) {
-                    // Lógica de Auto-Elevação para o Desenvolvedor (ygorfj@gmail.com)
+                    // BYPASS DIRETO PARA O DESENVOLVEDOR NA PERSISTÊNCIA
                     if (user.email === 'ygorfj@gmail.com') {
-                        await window.firebaseDb.setDoc(window.firebaseDb.doc(window.db, "users", user.uid), {
+                        currentUser = { 
+                            id: user.uid, 
+                            name: "Ygor Developer", 
+                            role: "admin",
+                            tenantId: "master_tenant",
+                            avatar: `https://ui-avatars.com/api/?name=Ygor+Dev&background=4F46E5&color=fff`
+                        };
+                        
+                        // Garante que o documento exista no Firestore em background
+                        window.firebaseDb.setDoc(window.firebaseDb.doc(window.db, "users", user.uid), {
                             name: "Ygor Developer",
                             email: user.email,
                             role: "admin",
                             status: "active",
-                            tenantId: "master_tenant",
-                            createdAt: new Date().toISOString()
-                        }, { merge: true });
-                        console.log("🚀 Acesso Developer auto-configurado para:", user.email);
+                            tenantId: "master_tenant"
+                        }, { merge: true }).catch(console.error);
+
+                        updateUserProfileUI();
+                        document.getElementById('login-screen').classList.add('hidden');
+                        switchTab('pdv');
+                        loadBusinessData();
+                        return;
                     }
 
                     const userDoc = await window.firebaseDb.getDoc(window.firebaseDb.doc(window.db, "users", user.uid));
