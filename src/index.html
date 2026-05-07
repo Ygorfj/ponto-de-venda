@@ -72,6 +72,11 @@
                 <i data-lucide="contact" class="w-6 h-6"></i>
                 <span class="ml-3 hidden lg:block font-medium">Clientes</span>
             </button>
+            <!-- ABA EXCLUSIVA: Gestão SaaS (Admin) -->
+            <button onclick="switchTab('admin')" id="nav-admin" class="flex justify-center md:justify-start items-center p-3 rounded-lg text-amber-400 hover:bg-amber-900/30 transition-colors hidden border border-amber-900/50 mt-4">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+                <span class="ml-3 hidden lg:block font-bold">Gestão SaaS</span>
+            </button>
         </nav>
 
         <div class="p-2 lg:p-4 border-t border-gray-700 flex flex-col gap-3">
@@ -668,6 +673,57 @@
                         <!-- Preenchido via JS -->
                     </tbody>
                 </table>
+            </div>
+        </section>
+
+        <!-- VIEW: ADMIN (Gestão de Usuários SaaS) -->
+        <section id="view-admin" class="flex-1 overflow-y-auto p-6 hidden fade-in bg-gray-50/30">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-black text-gray-800">Painel do Desenvolvedor</h2>
+                        <p class="text-gray-500">Aprovação de novos lojistas e controle de Tenant IDs</p>
+                    </div>
+                    <button onclick="loadPendingUsers()" class="p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 text-gray-600 transition-all border border-gray-200">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-2">Aguardando Aprovação</p>
+                        <h3 class="text-3xl font-black text-amber-600" id="stat-pending-count">0</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-2">Total de Empresas</p>
+                        <h3 class="text-3xl font-black text-primary" id="stat-total-users">0</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-2">Sincronização Cloud</p>
+                        <div class="flex items-center gap-2 text-green-500 font-bold">
+                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Ativa
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50/50 border-b border-gray-100 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                                <th class="px-6 py-4">Empresa/Lojista</th>
+                                <th class="px-6 py-4">E-mail</th>
+                                <th class="px-6 py-4">ID do Tenant</th>
+                                <th class="px-6 py-4">Data/Hora</th>
+                                <th class="px-6 py-4 text-right">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-pending-list">
+                            <tr>
+                                <td colspan="5" class="p-12 text-center text-gray-400 italic">Carregando lista de aprovações...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -1354,6 +1410,78 @@
             }
         }
 
+        // ------------------
+        // GESTÃO ADMIN (SaaS)
+        // ------------------
+        async function loadPendingUsers() {
+            const list = document.getElementById('admin-pending-list');
+            const pendingCountEl = document.getElementById('stat-pending-count');
+            const totalCountEl = document.getElementById('stat-total-users');
+            
+            try {
+                const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+                
+                const querySnapshot = await getDocs(collection(window.db, "users"));
+                let html = '';
+                let pendingCount = 0;
+                let totalCount = 0;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    totalCount++;
+                    
+                    if (data.status === 'pending') {
+                        pendingCount++;
+                        const dateStr = data.createdAt ? new Date(data.createdAt).toLocaleDateString('pt-BR') : 'N/A';
+                        
+                        html += `
+                            <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">
+                                            ${(data.name || '??').substring(0,2).toUpperCase()}
+                                        </div>
+                                        <span class="font-bold text-gray-800">${data.name || 'Sem Nome'}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">${data.email}</td>
+                                <td class="px-6 py-4 text-xs font-mono text-gray-400">${data.tenantId}</td>
+                                <td class="px-6 py-4 text-xs text-gray-400">${dateStr}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <button onclick="approveUser('${doc.id}')" class="bg-green-500 hover:bg-green-600 text-white text-[10px] font-black uppercase px-4 py-2 rounded-xl transition-all shadow-md shadow-green-100 transform active:scale-95">
+                                        Aprovar Agora
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+
+                list.innerHTML = html || '<tr><td colspan="5" class="p-12 text-center text-gray-400 italic">Nenhuma solicitação pendente no momento.</td></tr>';
+                pendingCountEl.innerText = pendingCount;
+                totalCountEl.innerText = totalCount;
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error("Erro ao carregar usuários:", error);
+                showToast("Erro ao ler dados do Firestore.", "alert-triangle", "red");
+            }
+        }
+
+        async function approveUser(uid) {
+            try {
+                const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+                await updateDoc(doc(window.db, "users", uid), {
+                    status: 'active'
+                });
+                showToast("Usuário aprovado com sucesso!", "check-circle", "green");
+                loadPendingUsers();
+            } catch (error) {
+                console.error("Erro ao aprovar:", error);
+                showToast("Falha ao atualizar status.", "x-circle", "red");
+            }
+        }
+
         function updateUserProfileUI() {
             const profileArea = document.getElementById('user-profile-area');
             profileArea.innerHTML = `
@@ -1370,10 +1498,15 @@
             `;
             
             // Controle de visibilidade do menu lateral
-            const isOwnerOrManager = currentUser.role === 'proprietario' || currentUser.role === 'gerente';
+            const isOwnerOrManager = currentUser.role === 'proprietario' || currentUser.role === 'gerente' || currentUser.role === 'admin';
             document.getElementById('nav-dashboard').style.display = isOwnerOrManager ? 'flex' : 'none';
             document.getElementById('nav-equipe').style.display = isOwnerOrManager ? 'flex' : 'none';
             document.getElementById('nav-financeiro').style.display = isOwnerOrManager ? 'flex' : 'none';
+
+            // Menu de Admin (SaaS Management)
+            // DEFINA AQUI SEU E-MAIL PARA TER ACESSO SEMPRE
+            const isAdmin = currentUser.role === 'admin' || currentUser.email === 'ygorfj@gmail.com' || currentUser.name.toLowerCase().includes('ygor');
+            document.getElementById('nav-admin').style.display = isAdmin ? 'flex' : 'none';
 
             lucide.createIcons();
         }
@@ -2458,6 +2591,7 @@
             document.getElementById('view-equipe')?.classList.add('hidden');
             document.getElementById('view-credores')?.classList.add('hidden');
             document.getElementById('view-financeiro')?.classList.add('hidden');
+            document.getElementById('view-admin')?.classList.add('hidden');
             
             // Reseta cores dos botões
             document.querySelectorAll('nav button').forEach(btn => {
@@ -2477,7 +2611,8 @@
                 'estoque': 'Gestão de Estoque e Insumos',
                 'equipe': 'Equipe, Metas e Produtividade',
                 'credores': 'Gestão de Clientes',
-                'financeiro': 'Financeiro & Lançamentos'
+                'financeiro': 'Financeiro & Lançamentos',
+                'admin': 'Administração SaaS (Developer Panel)'
             };
             document.getElementById('page-title').innerText = titles[tabId] || 'GlobalPOS';
 
@@ -2500,6 +2635,8 @@
                 renderCredores();
             } else if (tabId === 'financeiro') {
                 updateFinanceDashboard();
+            } else if (tabId === 'admin') {
+                loadPendingUsers();
             }
             
             if(tabId === 'dashboard') {
@@ -2947,10 +3084,24 @@
             // Verifica sessão ativa
             window.firebaseAuth.onAuthStateChanged(window.auth, async (user) => {
                 if (user) {
+                    // Lógica de Auto-Elevação para o Desenvolvedor (ygorfj@gmail.com)
+                    if (user.email === 'ygorfj@gmail.com') {
+                        await window.firebaseDb.setDoc(window.firebaseDb.doc(window.db, "users", user.uid), {
+                            name: "Ygor Developer",
+                            email: user.email,
+                            role: "admin",
+                            status: "active",
+                            tenantId: "master_tenant",
+                            createdAt: new Date().toISOString()
+                        }, { merge: true });
+                        console.log("🚀 Acesso Developer auto-configurado para:", user.email);
+                    }
+
                     const userDoc = await window.firebaseDb.getDoc(window.firebaseDb.doc(window.db, "users", user.uid));
                     if (userDoc.exists()) {
                         const userData = userDoc.data();
-                        if (userData.status === 'active') { // Assume 'active' for existing sessions
+                        // Se for admin ou ativo, deixa entrar
+                        if (userData.status === 'active' || userData.role === 'admin') {
                              currentUser = { 
                                 id: user.uid, 
                                 name: userData.name, 
