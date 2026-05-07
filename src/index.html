@@ -684,9 +684,15 @@
                         <h2 class="text-3xl font-black text-gray-800">Painel do Desenvolvedor</h2>
                         <p class="text-gray-500">Aprovação de novos lojistas e controle de Tenant IDs</p>
                     </div>
-                    <button onclick="loadPendingUsers()" class="p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 text-gray-600 transition-all border border-gray-200">
-                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="loadPendingUsers()" class="p-2 bg-white rounded-full shadow-sm hover:bg-gray-100 text-gray-600 transition-all border border-gray-200">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="resetAllData()" class="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 hover:bg-red-100 transition-all flex items-center gap-2">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            Limpar Dados de Teste
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -1340,6 +1346,7 @@
                     currentUser = { 
                         id: user.uid, 
                         name: userData.name || user.email.split('@')[0], 
+                        email: user.email,
                         role: userData.role,
                         tenantId: userData.tenantId,
                         avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || user.email)}&background=4F46E5&color=fff`
@@ -1498,6 +1505,19 @@
                 console.error("Erro ao aprovar:", error);
                 showToast("Falha ao atualizar status.", "x-circle", "red");
             }
+        }
+
+        // Função para o Desenvolvedor resetar dados fictícios
+        function resetAllData() {
+            if(!confirm('Deseja realmente apagar todos os dados locais e começar do zero?')) return;
+            
+            localStorage.clear();
+            inventory = [];
+            salesHistory = [];
+            mockClients = [];
+            
+            showToast('Dados limpos! Recarregando...', 'trash-2', 'blue');
+            setTimeout(() => location.reload(), 1500);
         }
 
         function updateUserProfileUI() {
@@ -3107,6 +3127,7 @@
                         currentUser = { 
                             id: user.uid, 
                             name: "Ygor Developer", 
+                            email: user.email,
                             role: "admin",
                             tenantId: "master_tenant",
                             avatar: `https://ui-avatars.com/api/?name=Ygor+Dev&background=4F46E5&color=fff`
@@ -3136,6 +3157,7 @@
                              currentUser = { 
                                 id: user.uid, 
                                 name: userData.name, 
+                                email: user.email,
                                 role: userData.role,
                                 tenantId: userData.tenantId,
                                 avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=4F46E5&color=fff`
