@@ -2681,42 +2681,92 @@
             showToast('Novo cliente cadastrado e selecionado!', 'user-plus', 'green');
         }
 
-        function saveMockData() {
+        async function saveMockData() {
             localStorage.setItem('pos_mock_products', JSON.stringify(products));
             localStorage.setItem('pos_mock_insumos', JSON.stringify(insumos));
             localStorage.setItem('pos_mock_sales', JSON.stringify(salesHistory));
             localStorage.setItem('pos_mock_team', JSON.stringify(teamMembers));
+
+            // Salva no Firestore se o Firebase estiver inicializado
+            if (window.db && window.doc && window.setDoc) {
+                try {
+                    const docRef = window.doc(window.db, "pdv_data", "main");
+                    await window.setDoc(docRef, {
+                        products,
+                        insumos,
+                        salesHistory,
+                        teamMembers
+                    });
+                    console.log('Dados sincronizados com o Firebase Firestore com sucesso.');
+                } catch (e) {
+                    console.error('Erro ao salvar dados no Firebase Firestore:', e);
+                }
+            }
         }
 
-        function loadMockData() {
-            try {
-                const savedProducts = localStorage.getItem('pos_mock_products');
-                if(savedProducts) products.splice(0, products.length, ...JSON.parse(savedProducts));
-                
-                const savedInsumos = localStorage.getItem('pos_mock_insumos');
-                if(savedInsumos) insumos.splice(0, insumos.length, ...JSON.parse(savedInsumos));
-                
-                const savedSales = localStorage.getItem('pos_mock_sales');
-                if(savedSales) salesHistory.splice(0, salesHistory.length, ...JSON.parse(savedSales));
+        async function loadMockData() {
+            let loadedFromFirebase = false;
 
-                const savedTeam = localStorage.getItem('pos_mock_team');
-                if(savedTeam) {
-                    const parsedTeam = JSON.parse(savedTeam);
-                    if(parsedTeam && parsedTeam.length > 0) {
-                        teamMembers.splice(0, teamMembers.length, ...parsedTeam);
+            // Tenta carregar do Firestore primeiro
+            if (window.db && window.doc && window.getDoc) {
+                try {
+                    const docRef = window.doc(window.db, "pdv_data", "main");
+                    const docSnap = await window.getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+
+                        if (data.products) products.splice(0, products.length, ...data.products);
+                        if (data.insumos) insumos.splice(0, insumos.length, ...data.insumos);
+                        if (data.salesHistory) salesHistory.splice(0, salesHistory.length, ...data.salesHistory);
+                        if (data.teamMembers && data.teamMembers.length > 0) {
+                            teamMembers.splice(0, teamMembers.length, ...data.teamMembers);
+                        }
+
+                        // Sincroniza o localStorage com os dados que vieram da nuvem
+                        localStorage.setItem('pos_mock_products', JSON.stringify(products));
+                        localStorage.setItem('pos_mock_insumos', JSON.stringify(insumos));
+                        localStorage.setItem('pos_mock_sales', JSON.stringify(salesHistory));
+                        localStorage.setItem('pos_mock_team', JSON.stringify(teamMembers));
+
+                        loadedFromFirebase = true;
+                        console.log('Dados carregados com sucesso do Firebase Firestore.');
                     }
+                } catch (e) {
+                    console.error('Erro ao buscar dados do Firebase, fazendo fallback para localStorage:', e);
                 }
-                
-                // Fallback de segurança: se a equipe estiver vazia, restaura o proprietário
-                if(teamMembers.length === 0) {
-                    teamMembers.push({ id: 1, name: 'Administrador', nickname: 'Admin', role: 'Proprietário', password: 'admin', avatar: 'https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff', status: 'online', checkIn: '00:00', points: 0, goal: 5000.00 });
+            }
+
+            // Se falhou ou o Firebase não estiver inicializado ou vazio, carrega do localStorage
+            if (!loadedFromFirebase) {
+                try {
+                    const savedProducts = localStorage.getItem('pos_mock_products');
+                    if(savedProducts) products.splice(0, products.length, ...JSON.parse(savedProducts));
+
+                    const savedInsumos = localStorage.getItem('pos_mock_insumos');
+                    if(savedInsumos) insumos.splice(0, insumos.length, ...JSON.parse(savedInsumos));
+
+                    const savedSales = localStorage.getItem('pos_mock_sales');
+                    if(savedSales) salesHistory.splice(0, salesHistory.length, ...JSON.parse(savedSales));
+
+                    const savedTeam = localStorage.getItem('pos_mock_team');
+                    if(savedTeam) {
+                        const parsedTeam = JSON.parse(savedTeam);
+                        if(parsedTeam && parsedTeam.length > 0) {
+                            teamMembers.splice(0, teamMembers.length, ...parsedTeam);
+                        }
+                    }
+                } catch(e) {
+                    console.error('Erro ao carregar dados locais. Cache pode estar corrompido.', e);
+                    localStorage.removeItem('pos_mock_products');
+                    localStorage.removeItem('pos_mock_insumos');
+                    localStorage.removeItem('pos_mock_sales');
+                    localStorage.removeItem('pos_mock_team');
                 }
-            } catch(e) {
-                console.error('Erro ao carregar dados locais. Cache pode estar corrompido.', e);
-                localStorage.removeItem('pos_mock_products');
-                localStorage.removeItem('pos_mock_insumos');
-                localStorage.removeItem('pos_mock_sales');
-                localStorage.removeItem('pos_mock_team');
+            }
+
+            // Fallback de segurança: se a equipe estiver vazia, restaura o proprietário
+            if(teamMembers.length === 0) {
+                teamMembers.push({ id: 1, name: 'Administrador', nickname: 'Admin', role: 'Proprietário', password: 'admin', avatar: 'https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff', status: 'online', checkIn: '00:00', points: 0, goal: 5000.00 });
             }
         }
 
@@ -2843,8 +2893,12 @@
         }
 
         // Inicialização
-        window.onload = () => {
-            loadMockData();
+        window.onload = async () => {
+            // Se o firebaseConfig for carregado de forma assíncrona, esperamos brevemente a injeção do window.db
+            if(!window.db) {
+               await new Promise(r => setTimeout(r, 500));
+            }
+            await loadMockData();
             renderProducts();
             populateLoginSelect();
         };

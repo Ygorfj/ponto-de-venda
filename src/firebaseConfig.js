@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -21,5 +21,8 @@ const analytics = getAnalytics(app);
 // Disponibiliza globalmente para que suas funções no index.html continuem funcionando
 window.db = getFirestore(app);
 window.auth = getAuth(app);
+window.doc = doc;
+window.setDoc = setDoc;
+window.getDoc = getDoc;
 
 console.log("🚀 Firebase SaaS Engine: Conectado e Carregado do Arquivo Externo");
